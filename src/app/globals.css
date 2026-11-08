@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+/* ===========================================================================
+   Cardocia — Thème sombre
+   =========================================================================== */
+
+@theme {
+  --color-canvas: #121216;
+  --color-surface: #1a1a20;
+  --color-surface-2: #22222a;
+  --color-surface-3: #2a2a33;
+  --color-line: #2e2e37;
+  --color-line-strong: #3a3a45;
+  --color-ink: #ececef;
+  --color-muted: #9b9ba6;
+  --color-faint: #6b6b76;
+
+  --color-fire: #ef4444;
+  --color-water: #3b82f6;
+  --color-grass: #22c55e;
+  --color-electric: #facc15;
+  --color-psy: #a855f7;
+
+  --color-brand: #ef4444;
+  --color-brand-strong: #dc2626;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Barres de défilement discrètes */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-line-strong);
+  border-radius: 8px;
+}
+
+@layer components {
+  /* Carte encadrée */
+  .panel {
+    @apply rounded-xl border border-line bg-surface;
+  }
+
+  .panel-pad {
+    @apply rounded-xl border border-line bg-surface p-4;
+  }
+
+  /* Champ de formulaire */
+  .field-label {
+    @apply mb-1 block text-sm font-medium text-muted;
+  }
+
+  .input {
+    @apply w-full rounded-lg border border-line bg-surface-2 px-3 py-2 text-sm text-ink
+      outline-none transition-colors placeholder:text-faint
+      focus:border-line-strong focus:ring-2 focus:ring-fire/40;
+  }
+
+  .select {
+    @apply w-full rounded-lg border border-line bg-surface-2 px-3 py-2 text-sm text-ink
+      outline-none transition-colors focus:border-line-strong focus:ring-2 focus:ring-fire/40;
+  }
+
+  .textarea {
+    @apply w-full rounded-lg border border-line bg-surface-2 px-3 py-2 text-sm text-ink
+      outline-none transition-colors placeholder:text-faint
+      focus:border-line-strong focus:ring-2 focus:ring-fire/40;
+  }
+}

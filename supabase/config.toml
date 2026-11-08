@@ -1,0 +1,14 @@
+# Configuration Supabase CLI (supabase.com/docs/guides/cli)
+# Renseignez project_id après `supabase link`.
+project_id = "your-project-ref"
+
+[db]
+major_version = 15
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage"]
+
+[storage]
+enabled = true
