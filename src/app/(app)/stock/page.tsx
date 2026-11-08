@@ -1,10 +1,12 @@
-import { requireUser } from "@/lib/get-user";
+﻿import { requireUser } from "@/lib/get-user";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/StatCard";
 import { EmptyState } from "@/components/ui/Button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { StockFormModal } from "@/components/stock/StockFormModal";
+import { logoUrl } from "@/lib/utils";
+import Image from "next/image";
 
 interface TrackedCollection {
   id: string;
@@ -64,7 +66,7 @@ export default async function StockPage({
     ownedBySet.set(setId, e);
   }
 
-  const collectionsMap = new Map<string, { name: string; sets: typeof sets }>();
+  const collectionsMap: Map<string, { name: string; sets: { id: string; name: string; logo: string | null; card_count: number | null; collection: { name: string } | null }[] }> = new Map();
   for (const s of sets) {
     const collName = s.collection?.name ?? "Autres";
     let c = collectionsMap.get(collName);
@@ -79,7 +81,8 @@ export default async function StockPage({
   for (const [collName, c] of collectionsMap) {
     let owned = 0;
     let total = 0;
-    for (const s of c.sets) {
+    for (const set of c.sets) {
+      const s = set as { id: string; name: string; logo: string | null; card_count: number | null; collection: { name: string } | null };
       total += s.card_count ?? 0;
       const o = ownedBySet.get(s.id);
       owned += o?.distinct.size ?? 0;
@@ -88,13 +91,14 @@ export default async function StockPage({
       id: collName,
       name: collName,
       slug: collName.toLowerCase(),
-      logo: s.logo,
+      logo: c.sets[0]?.logo ?? null,
       setCount: c.sets.length,
       ownedDistinct: owned,
       totalCards: total,
       percent: total > 0 ? Math.round((owned / total) * 100) : 0,
     });
   }
+
   const collections =
     filter === "owned"
       ? collectionsOut.filter((c) => c.ownedDistinct > 0)
@@ -152,36 +156,42 @@ export default async function StockPage({
             <Link
               key={c.id}
               href={`/stock/${c.slug}`}
-              className="group block panel-pad transition-all hover:border-brand hover:bg-surface-2 hover:shadow-md"
+              className="panel-pad transition-colors hover:border-line-strong"
             >
-              <div className="h-48 flex items-center justify-center overflow-hidden rounded-xl bg-surface-2 mb-4 group-hover:bg-brand/5">
-                {c.logo ? (
-                  <img
-                    src={c.logo}
-                    alt={c.name}
-                    className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <span className="text-3xl font-bold text-muted">{c.name.charAt(0)}</span>
-                )}
-              </div>
-              <div className="flex items-start justify-between gap-2">
-                <h2 className="font-semibold text-ink truncate">{c.name}</h2>
-                <span className="shrink-0 rounded-md border border-line bg-surface-2 px-2 py-0.5 text-xs text-muted">
-                  {c.setCount} série{c.setCount > 1 ? "s" : ""}
-                </span>
-              </div>
-              <p className="mt-2 text-xs text-muted">
-                {c.ownedDistinct} / {c.totalCards} cartes en stock
-              </p>
-              <div className="mt-4 flex items-center gap-3">
-                <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-surface-3">
-                  <div
-                    className="h-full rounded-full bg-grass transition-all duration-300"
-                    style={{ width: `${c.percent}%` }}
-                  />
+              <div className="flex items-center gap-3">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-2">
+                  {logoUrl(c.logo) ? (
+                    <Image
+                      src={logoUrl(c.logo)!}
+                      alt={c.name}
+                      className="h-full w-full object-contain"
+                      width={56}
+                      height={56}
+                    />
+                  ) : (
+                    <span className="text-xl font-bold text-muted">{c.name.charAt(0)}</span>
+                  )}
                 </div>
-                <span className="text-sm font-semibold tabular-nums text-ink">{c.percent}%</span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <h2 className="truncate font-semibold text-ink">{c.name}</h2>
+                    <span className="shrink-0 rounded-md border border-line bg-surface-2 px-2 py-0.5 text-xs text-muted">
+                      {c.setCount} série{c.setCount > 1 ? "s" : ""}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-muted">
+                    {c.ownedDistinct} / {c.totalCards} cartes en stock
+                  </p>
+                  <div className="mt-3 flex items-center gap-3">
+                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-3">
+                      <div
+                        className="h-full rounded-full bg-grass"
+                        style={{ width: `${c.percent}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-semibold tabular-nums text-ink">{c.percent}%</span>
+                  </div>
+                </div>
               </div>
             </Link>
           ))}

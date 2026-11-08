@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { requireUser } from "@/lib/get-user";
 import { PageHeader } from "@/components/ui/StatCard";
@@ -114,11 +115,7 @@ export default async function CollectionPage({
               <div className="flex items-center gap-3">
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-2">
                   {logoUrl(c.logo) ? (
-                    <img
-                      src={logoUrl(c.logo)!}
-                      alt={c.name}
-                      className="h-full w-full object-contain"
-                    />
+                    <Image src={logoUrl(c.logo)!} alt={c.name} className="h-full w-full object-contain" width={56} height={56} />
                   ) : (
                     <span className="text-xl font-bold text-muted">{c.name.charAt(0)}</span>
                   )}
