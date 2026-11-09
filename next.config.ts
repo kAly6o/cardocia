@@ -9,6 +9,13 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        hostname: "assets.tcgdex.net",
+      },
+    ],
+  },
 };
 
 export default nextConfig;
