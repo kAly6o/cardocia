@@ -1,4 +1,4 @@
-﻿import { requireUser } from "@/lib/get-user";
+import { requireUser } from "@/lib/get-user";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/StatCard";
 import { EmptyState } from "@/components/ui/Button";
@@ -6,7 +6,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { StockFormModal } from "@/components/stock/StockFormModal";
 import { logoUrl } from "@/lib/utils";
-import Image from "next/image";
+import { LogoImage } from "@/components/cards/LogoImage";
 
 interface TrackedCollection {
   id: string;
@@ -160,17 +160,7 @@ export default async function StockPage({
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-2">
-                  {logoUrl(c.logo) ? (
-                    <Image
-                      src={logoUrl(c.logo)!}
-                      alt={c.name}
-                      className="h-full w-full object-contain"
-                      width={56}
-                      height={56}
-                    />
-                  ) : (
-                    <span className="text-xl font-bold text-muted">{c.name.charAt(0)}</span>
-                  )}
+                  <LogoImage src={logoUrl(c.logo)} alt={c.name} fallback={c.name.charAt(0)} className="h-full w-full object-contain" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">

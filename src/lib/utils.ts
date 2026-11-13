@@ -34,7 +34,7 @@ export function formatNumber(value: number | null | undefined): string {
   return new Intl.NumberFormat("fr-FR").format(value);
 }
 
-/** URL d'un logo TCGdex : l'API renvoie un chemin sans extension (…/logo). */
+/** URL d'un logo TCGdex : l'API renvoie un chemin sans extension («.../logo»). */
 export function logoUrl(logo: string | null | undefined): string | null {
   if (!logo) return null;
   return logo.endsWith(".png") ? logo : `${logo}.png`;
