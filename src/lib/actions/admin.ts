@@ -52,7 +52,7 @@ export async function saveCollection(
     return { error: "Impossible d'enregistrer la collection." };
   }
 
-  revalidatePath("/admin/catalogue");
+  await revalidatePath("/admin/catalogue");
   return { success: id ? "Collection modifiée." : "Collection ajoutée." };
 }
 
@@ -60,7 +60,7 @@ export async function deleteCollection(formData: FormData): Promise<void> {
   const supabase = await adminClient();
   const id = String(formData.get("id") ?? "");
   await supabase.from("catalog_collections").delete().eq("id", id);
-  revalidatePath("/admin/catalogue");
+  await revalidatePath("/admin/catalogue");
 }
 
 // ---------------------------------------------------------------------------
@@ -95,7 +95,7 @@ export async function saveSet(
 
   if (error) return { error: "Impossible d'enregistrer l'extension." };
 
-  revalidatePath("/admin/catalogue");
+  await revalidatePath("/admin/catalogue");
   return { success: id ? "Extension modifiée." : "Extension ajoutée." };
 }
 
@@ -103,7 +103,7 @@ export async function deleteSet(formData: FormData): Promise<void> {
   const supabase = await adminClient();
   const id = String(formData.get("id") ?? "");
   await supabase.from("catalog_sets").delete().eq("id", id);
-  revalidatePath("/admin/catalogue");
+  await revalidatePath("/admin/catalogue");
 }
 
 // ---------------------------------------------------------------------------
@@ -141,7 +141,7 @@ export async function saveCard(
 
   if (error) return { error: "Impossible d'enregistrer la carte." };
 
-  revalidatePath("/admin/catalogue");
+  await revalidatePath("/admin/catalogue");
   return { success: id ? "Carte modifiée." : "Carte ajoutée." };
 }
 
@@ -149,7 +149,7 @@ export async function deleteCard(formData: FormData): Promise<void> {
   const supabase = await adminClient();
   const id = String(formData.get("id") ?? "");
   await supabase.from("catalog_cards").delete().eq("id", id);
-  revalidatePath("/admin/catalogue");
+  await revalidatePath("/admin/catalogue");
 }
 
 // ---------------------------------------------------------------------------
@@ -164,8 +164,8 @@ export async function setUserAdmin(formData: FormData): Promise<void> {
   // Évite de se rétrograder soi-même (sinon perte d'accès à l'espace admin).
   if (!admin && id === current.id) return;
   await supabase.from("profiles").update({ is_admin: admin }).eq("id", id);
-  revalidatePath("/admin/utilisateurs");
-  revalidatePath("/admin");
+  await revalidatePath("/admin/utilisateurs");
+  await revalidatePath("/admin");
 }
 
 export async function banUser(formData: FormData): Promise<void> {
@@ -176,5 +176,5 @@ export async function banUser(formData: FormData): Promise<void> {
   await supabase.auth.admin.updateUserById(id, {
     ban_duration: ban ? "876600h" : "none",
   });
-  revalidatePath("/admin/utilisateurs");
+  await revalidatePath("/admin/utilisateurs");
 }

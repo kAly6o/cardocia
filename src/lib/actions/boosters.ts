@@ -47,7 +47,7 @@ export async function saveRecipe(
     const { error } = await supabase.from("booster_recipes").insert(payload);
     if (error) return { error: "Impossible de créer la recette." };
   }
-  revalidatePath("/lots", "layout");
+  await revalidatePath("/lots", "layout");
   return { success: id ? "Recette modifiée." : "Recette créée." };
 }
 
@@ -56,7 +56,7 @@ export async function deleteRecipe(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   const supabase = await createClient();
   await supabase.from("booster_recipes").delete().eq("id", id).eq("user_id", user.id);
-  revalidatePath("/lots", "layout");
+  await revalidatePath("/lots", "layout");
 }
 
 export async function createBooster(formData: FormData): Promise<void> {
@@ -171,9 +171,9 @@ export async function addBoosterLine(formData: FormData): Promise<void> {
     notes: "Utilisée dans un booster",
   });
 
-  revalidatePath(`/boosters/${boosterId}`);
-  revalidatePath("/stock");
-  revalidatePath("/lots", "layout");
+  await revalidatePath(`/boosters/${boosterId}`);
+  await revalidatePath("/stock");
+  await revalidatePath("/lots", "layout");
 }
 
 export async function removeBoosterLine(formData: FormData): Promise<void> {
@@ -200,9 +200,9 @@ export async function removeBoosterLine(formData: FormData): Promise<void> {
   });
 
   await supabase.from("booster_lines").delete().eq("id", lineId);
-  revalidatePath(`/boosters/${line.booster_id}`);
-  revalidatePath("/stock");
-  revalidatePath("/lots", "layout");
+  await revalidatePath(`/boosters/${line.booster_id}`);
+  await revalidatePath("/stock");
+  await revalidatePath("/lots", "layout");
 }
 
 export async function setBoosterStatus(formData: FormData): Promise<void> {
@@ -240,9 +240,9 @@ export async function setBoosterStatus(formData: FormData): Promise<void> {
     }
   }
 
-  revalidatePath(`/boosters/${boosterId}`);
-  revalidatePath("/lots", "layout");
-  revalidatePath("/stock");
+  await revalidatePath(`/boosters/${boosterId}`);
+  await revalidatePath("/lots", "layout");
+  await revalidatePath("/stock");
 }
 
 export async function deleteBooster(formData: FormData): Promise<void> {
@@ -279,8 +279,8 @@ export async function deleteBooster(formData: FormData): Promise<void> {
   }
   await supabase.from("booster_products").delete().eq("id", boosterId).eq("user_id", user.id);
   if (boosterRow?.set_id) await applySleeveDelta(supabase, user.id, boosterRow.set_id, 1);
-  revalidatePath("/lots", "layout");
-  revalidatePath("/stock");
+  await revalidatePath("/lots", "layout");
+  await revalidatePath("/stock");
 }
 
 type SupabaseServer = Awaited<ReturnType<typeof createClient>>;
@@ -325,6 +325,6 @@ export async function adjustBoosterSleeve(formData: FormData): Promise<void> {
   if (!setId || delta === 0) return;
   const supabase = await createClient();
   await applySleeveDelta(supabase, user.id, setId, delta);
-  revalidatePath("/lots", "layout");
-  revalidatePath("/");
+  await revalidatePath("/lots", "layout");
+  await revalidatePath("/");
 }

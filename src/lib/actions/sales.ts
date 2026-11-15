@@ -119,9 +119,9 @@ export async function saveSale(
     }
   }
 
-  revalidatePath("/ventes");
-  revalidatePath("/stock");
-  revalidatePath("/");
+  await revalidatePath("/ventes");
+  await revalidatePath("/stock");
+  await revalidatePath("/");
   return { success: "Vente enregistrée." };
 }
 
@@ -130,6 +130,6 @@ export async function deleteSale(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   const supabase = await createClient();
   await supabase.from("sales").delete().eq("id", id).eq("user_id", user.id);
-  revalidatePath("/ventes");
-  revalidatePath("/");
+  await revalidatePath("/ventes");
+  await revalidatePath("/");
 }

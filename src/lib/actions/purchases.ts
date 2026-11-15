@@ -95,8 +95,8 @@ export async function savePurchase(
     notes: `Achat enregistré (${header.seller_name ?? "vendeur inconnu"})`,
   });
 
-  revalidatePath("/achats");
-  revalidatePath("/");
+  await revalidatePath("/achats");
+  await revalidatePath("/");
   return { success: "Achat enregistré." };
 }
 
@@ -172,11 +172,11 @@ export async function receivePurchase(formData: FormData): Promise<void> {
     .eq("id", id)
     .eq("user_id", user.id);
 
-  revalidatePath(`/achats/${id}`);
-  revalidatePath("/achats");
-  revalidatePath("/collection");
-  revalidatePath("/stock");
-  revalidatePath("/");
+  await revalidatePath(`/achats/${id}`);
+  await revalidatePath("/achats");
+  await revalidatePath("/collection");
+  await revalidatePath("/stock");
+  await revalidatePath("/");
 }
 
 export async function deletePurchase(formData: FormData): Promise<void> {
@@ -184,6 +184,6 @@ export async function deletePurchase(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   const supabase = await createClient();
   await supabase.from("purchases").delete().eq("id", id).eq("user_id", user.id);
-  revalidatePath("/achats");
-  revalidatePath("/");
+  await revalidatePath("/achats");
+  await revalidatePath("/");
 }

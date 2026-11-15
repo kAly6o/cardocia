@@ -164,9 +164,9 @@ export async function importTcgdexSeries(
     }
   }
 
-  revalidatePath("/collection", "layout");
-  revalidatePath("/admin/catalogue");
-  revalidatePath("/admin/tcgdex");
+  await revalidatePath("/collection", "layout");
+  await revalidatePath("/admin/catalogue");
+  await revalidatePath("/admin/tcgdex");
 
   const summary = `${collections} collection(s), ${sets} extension(s), ${cards} carte(s) importées.`;
   if (errors.length > 0) {

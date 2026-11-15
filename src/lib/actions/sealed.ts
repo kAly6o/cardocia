@@ -42,8 +42,8 @@ export async function saveSealedProduct(
     const { error } = await supabase.from("sealed_products").insert(payload);
     if (error) return { error: "Impossible d'ajouter le produit." };
   }
-  revalidatePath("/produits");
-  revalidatePath("/collection", "layout");
+  await revalidatePath("/produits");
+  await revalidatePath("/collection", "layout");
   return { success: id ? "Produit modifié." : "Produit ajouté." };
 }
 
@@ -52,8 +52,8 @@ export async function deleteSealedProduct(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   const supabase = await createClient();
   await supabase.from("sealed_products").delete().eq("id", id).eq("user_id", user.id);
-  revalidatePath("/produits");
-  revalidatePath("/collection", "layout");
+  await revalidatePath("/produits");
+  await revalidatePath("/collection", "layout");
 }
 
 export async function openProduct(formData: FormData): Promise<void> {
@@ -160,7 +160,7 @@ export async function addOpeningLine(formData: FormData): Promise<void> {
     notes: `Carte obtenue (${destination})`,
   });
 
-  revalidatePath(`/produits/ouverture/${openingId}`);
-  revalidatePath("/collection");
-  revalidatePath("/stock");
+  await revalidatePath(`/produits/ouverture/${openingId}`);
+  await revalidatePath("/collection");
+  await revalidatePath("/stock");
 }

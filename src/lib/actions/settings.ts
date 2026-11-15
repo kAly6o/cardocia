@@ -34,6 +34,6 @@ export async function savePlatforms(
     .eq("id", user.id);
   if (error) return { error: "Impossible d'enregistrer les plateformes." };
 
-  revalidatePath("/parametres");
+  await revalidatePath("/parametres");
   return { success: "Plateformes enregistrées." };
 }

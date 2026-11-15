@@ -59,12 +59,12 @@ export async function saveLot(
           unit_cost: line.unit_cost,
         });
       }
-      revalidatePath("/stock");
-      revalidatePath("/lots");
+      await revalidatePath("/stock");
+      await revalidatePath("/lots");
       return { success: `Lot créé — ${picked}/${requested} cartes piochées depuis le stock.` };
     }
   }
-  revalidatePath("/lots");
+  await revalidatePath("/lots");
   return { success: id ? "Lot modifié." : "Lot créé." };
 }
 
@@ -120,9 +120,9 @@ export async function addToLot(formData: FormData): Promise<void> {
     notes: "Ajout au lot",
   });
 
-  revalidatePath(`/lots/${lotId}`);
-  revalidatePath("/stock");
-  revalidatePath("/lots");
+  await revalidatePath(`/lots/${lotId}`);
+  await revalidatePath("/stock");
+  await revalidatePath("/lots");
 }
 
 export async function removeLotLine(formData: FormData): Promise<void> {
@@ -161,9 +161,9 @@ export async function removeLotLine(formData: FormData): Promise<void> {
     notes: "Retiré du lot",
   });
 
-  revalidatePath(`/lots/${line.lot_id}`);
-  revalidatePath("/stock");
-  revalidatePath("/lots");
+  await revalidatePath(`/lots/${line.lot_id}`);
+  await revalidatePath("/stock");
+  await revalidatePath("/lots");
 }
 
 export async function setLotStatus(formData: FormData): Promise<void> {
@@ -197,9 +197,9 @@ export async function setLotStatus(formData: FormData): Promise<void> {
     }
   }
 
-  revalidatePath(`/lots/${lotId}`);
-  revalidatePath("/lots");
-  revalidatePath("/stock");
+  await revalidatePath(`/lots/${lotId}`);
+  await revalidatePath("/lots");
+  await revalidatePath("/stock");
 }
 
 export async function deleteLot(formData: FormData): Promise<void> {
@@ -228,6 +228,6 @@ export async function deleteLot(formData: FormData): Promise<void> {
     });
   }
   await supabase.from("lots").delete().eq("id", lotId).eq("user_id", user.id);
-  revalidatePath("/lots");
-  revalidatePath("/stock");
+  await revalidatePath("/lots");
+  await revalidatePath("/stock");
 }
