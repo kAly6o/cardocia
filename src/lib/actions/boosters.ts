@@ -63,6 +63,7 @@ export async function createBooster(formData: FormData): Promise<void> {
   const user = await requireUser();
   const name = String(formData.get("name") ?? "").trim() || "Booster reconditionné";
   const recipeId = String(formData.get("recipe_id") ?? "") || null;
+  const setId = String(formData.get("set_id") ?? "") || null;
   const supabase = await createClient();
 
   const { data: booster } = await supabase
@@ -70,6 +71,7 @@ export async function createBooster(formData: FormData): Promise<void> {
     .insert({
       user_id: user.id,
       recipe_id: recipeId,
+      set_id: setId,
       name,
       desired_price: toNumber(formData.get("desired_price")),
       status: "Disponible",
@@ -77,6 +79,9 @@ export async function createBooster(formData: FormData): Promise<void> {
     .select("id")
     .single();
   if (!booster) return;
+
+  // Consomme un emballage vide de la série choisie, s'il en reste.
+  await applySleeveDelta(supabase, user.id, setId, -1);
 
   // Composition automatique depuis la recette.
   if (recipeId) {
@@ -245,6 +250,13 @@ export async function deleteBooster(formData: FormData): Promise<void> {
   const boosterId = String(formData.get("id") ?? "");
   const supabase = await createClient();
 
+  const { data: boosterRow } = await supabase
+    .from("booster_products")
+    .select("set_id")
+    .eq("id", boosterId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
   const { data: lines } = await supabase.from("booster_lines").select("*").eq("booster_id", boosterId);
   for (const l of (lines ?? []) as Array<{
     stock_item_id: string | null;
@@ -266,6 +278,53 @@ export async function deleteBooster(formData: FormData): Promise<void> {
     });
   }
   await supabase.from("booster_products").delete().eq("id", boosterId).eq("user_id", user.id);
+  if (boosterRow?.set_id) await applySleeveDelta(supabase, user.id, boosterRow.set_id, 1);
   revalidatePath("/lots", "layout");
   revalidatePath("/stock");
+}
+
+type SupabaseServer = Awaited<ReturnType<typeof createClient>>;
+
+async function applySleeveDelta(
+  supabase: SupabaseServer,
+  userId: string,
+  setId: string | null,
+  delta: number,
+): Promise<void> {
+  if (!setId || delta === 0) return;
+  const { data: existing } = await supabase
+    .from("booster_sleeves")
+    .select("id, quantity")
+    .eq("user_id", userId)
+    .eq("set_id", setId)
+    .maybeSingle();
+
+  const next = (existing?.quantity ?? 0) + delta;
+  if (next <= 0) {
+    if (existing) {
+      await supabase.from("booster_sleeves").delete().eq("id", existing.id);
+    }
+  } else if (existing) {
+    await supabase
+      .from("booster_sleeves")
+      .update({ quantity: next })
+      .eq("id", existing.id);
+  } else {
+    await supabase.from("booster_sleeves").insert({
+      user_id: userId,
+      set_id: setId,
+      quantity: Math.max(1, delta),
+    });
+  }
+}
+
+export async function adjustBoosterSleeve(formData: FormData): Promise<void> {
+  const user = await requireUser();
+  const setId = String(formData.get("set_id") ?? "");
+  const delta = toInt(formData.get("delta")) ?? 0;
+  if (!setId || delta === 0) return;
+  const supabase = await createClient();
+  await applySleeveDelta(supabase, user.id, setId, delta);
+  revalidatePath("/lots", "layout");
+  revalidatePath("/");
 }
