@@ -14,6 +14,7 @@ import {
   BookOpen,
   Users,
   Download,
+  Upload,
 } from "lucide-react";
 
 export interface NavItem {
@@ -58,6 +59,12 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Lots & Boosters",
     section: "Commerce",
     icon: <Package className="h-5 w-5" />,
+  },
+  {
+    href: "/import",
+    label: "Imports",
+    section: "Commerce",
+    icon: <Upload className="h-5 w-5" />,
   },
   {
     href: "/historique",
