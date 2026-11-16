@@ -4,12 +4,13 @@ import { EmptyState, IconButton } from "@/components/ui/Button";
 import { Table, Td } from "@/components/ui/Table";
 import { ConfirmForm } from "@/components/ui/ConfirmForm";
 import { RarityBadge, TypeBadge } from "@/components/ui/Badge";
+import { LogoImage } from "@/components/cards/LogoImage";
 import { CollectionFormModal } from "@/components/admin/CollectionFormModal";
 import { SetFormModal, type SetCollectionOption } from "@/components/admin/SetFormModal";
 import { CardFormModal, type CardSetOption } from "@/components/admin/CardFormModal";
 import { deleteCollection, deleteSet, deleteCard } from "@/lib/actions/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { cn, formatDate } from "@/lib/utils";
+import { cn, formatDate, logoUrl } from "@/lib/utils";
 import { Pencil, Trash2 } from "lucide-react";
 
 type Tab = "collections" | "sets" | "cards";
@@ -146,7 +147,20 @@ export default async function AdminCataloguePage({
             <Table headers={["Nom", "Slug", "Ordre", "Description", "Actions"]}>
               {collections.map((c) => (
                 <tr key={c.id} className="hover:bg-surface-2/40">
-                  <Td className="font-medium text-ink">{c.name}</Td>
+                  <Td className="font-medium text-ink">
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-9 w-16 shrink-0 items-center justify-center rounded-md bg-logo-bg p-1">
+                        <LogoImage
+                          src={logoUrl(c.logo)}
+                          alt={c.name}
+                          fallback={c.name.charAt(0)}
+                          className="h-full w-full object-contain"
+                          fallbackClassName="h-5 w-5 text-xs"
+                        />
+                      </div>
+                      {c.name}
+                    </div>
+                  </Td>
                   <Td className="text-muted">{c.slug}</Td>
                   <Td className="tabular-nums text-muted">{c.sort_order}</Td>
                   <Td className="text-muted">{c.description ?? "—"}</Td>
@@ -201,7 +215,20 @@ export default async function AdminCataloguePage({
             <Table headers={["Nom", "Collection", "Sortie", "Cartes", "Actions"]}>
               {sets.map((s) => (
                 <tr key={s.id} className="hover:bg-surface-2/40">
-                  <Td className="font-medium text-ink">{s.name}</Td>
+                  <Td className="font-medium text-ink">
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-9 w-16 shrink-0 items-center justify-center rounded-md bg-logo-bg p-1">
+                        <LogoImage
+                          src={logoUrl(s.logo)}
+                          alt={s.name}
+                          fallback={s.name.charAt(0)}
+                          className="h-full w-full object-contain"
+                          fallbackClassName="h-5 w-5 text-xs"
+                        />
+                      </div>
+                      {s.name}
+                    </div>
+                  </Td>
                   <Td className="text-muted">{s.collection?.name ?? "—"}</Td>
                   <Td className="text-muted">{formatDate(s.release_date)}</Td>
                   <Td className="tabular-nums text-muted">{s.card_count ?? "—"}</Td>
