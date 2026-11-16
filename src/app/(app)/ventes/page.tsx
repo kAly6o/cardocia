@@ -9,6 +9,7 @@ import { StatusBadge } from "@/components/ui/Badge";
 import { ConfirmForm } from "@/components/ui/ConfirmForm";
 import { deleteSale } from "@/lib/actions/sales";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { Trash2 } from "lucide-react";
 
 interface Row {
   id: string;
@@ -77,7 +78,7 @@ export default async function SalesPage() {
                 <ConfirmForm action={deleteSale} message="Supprimer cette vente ?">
                   <input type="hidden" name="id" value={s.id} />
                   <IconButton type="submit" title="Supprimer" className="hover:bg-red-900/30 hover:text-red-300">
-                    🗑
+                    <Trash2 className="h-4 w-4" />
                   </IconButton>
                 </ConfirmForm>
               </Td>

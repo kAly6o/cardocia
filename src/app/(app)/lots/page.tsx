@@ -10,6 +10,7 @@ import { LotFormModal } from "@/components/lots/LotFormModal";
 import { BoostersPanel } from "@/components/boosters/BoostersPanel";
 import { deleteLot } from "@/lib/actions/lots";
 import { formatCurrency, cn } from "@/lib/utils";
+import { ArrowRight, Trash2 } from "lucide-react";
 
 interface Row {
   id: string;
@@ -114,12 +115,12 @@ export default async function LotsPage({
                 <Td>
                   <div className="flex items-center gap-1">
                     <Link href={`/lots/${l.id}`}>
-                      <IconButton title="Voir">→</IconButton>
+                      <IconButton title="Voir"><ArrowRight className="h-4 w-4" /></IconButton>
                     </Link>
                     <ConfirmForm action={deleteLot} message="Supprimer ce lot ? Les cartes seront libérées.">
                       <input type="hidden" name="id" value={l.id} />
                       <IconButton type="submit" title="Supprimer" className="hover:bg-red-900/30 hover:text-red-300">
-                        🗑
+                        <Trash2 className="h-4 w-4" />
                       </IconButton>
                     </ConfirmForm>
                   </div>

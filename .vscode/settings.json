@@ -1,0 +1,5 @@
+{
+  // Tailwind v4 utilise des at-rules (`@theme`, `@apply`) que le linter CSS
+  // natif de VS Code ne reconnaît pas. On les ignore : le build Next les valide.
+  "css.lint.unknownAtRules": "ignore"
+}

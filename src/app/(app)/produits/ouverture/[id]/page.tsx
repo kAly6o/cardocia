@@ -9,6 +9,7 @@ import { CardPicker } from "@/components/cards/CardPicker";
 import { addOpeningLine } from "@/lib/actions/sealed";
 import { LANGUAGES, CONDITIONS, FINISHES } from "@/lib/constants";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { ArrowLeft } from "lucide-react";
 
 export default async function OpeningPage({
   params,
@@ -39,7 +40,7 @@ export default async function OpeningPage({
         description={`${opening.sealed_product?.name ?? "Produit"} · ${formatDate(opening.opened_at)} · ${opening.quantity_opened} unité(s)`}
         actions={
           <Link href="/collection?tab=sealed" className="text-sm text-muted transition-colors hover:text-ink">
-            ← Retour aux produits
+            <ArrowLeft className="mr-1 inline-block h-3.5 w-3.5 align-[-2px]" />Retour aux produits
           </Link>
         }
       />

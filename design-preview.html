@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cardocia — Maquette design « dark premium »</title>
+<style>
+  :root {
+    --bg: #0e0e12;
+    --s1: #17171d;
+    --s2: #1f1f27;
+    --s3: #27272f;
+    --line: #2c2c36;
+    --line2: #3d3d4a;
+    --ink: #f2f2f5;
+    --muted: #a1a1ac;
+    --faint: #70707b;
+    --brand: #e23744;
+    --brand2: #f97316;
+    --grad: linear-gradient(135deg, #f97316, #e23744);
+    --fire: #ef4444;
+    --water: #3b82f6;
+    --grass: #22c55e;
+    --elec: #facc15;
+    --psy: #a855f7;
+    --shadow-card: inset 0 1px 0 rgba(255,255,255,.035), 0 10px 30px -14px rgba(0,0,0,.75);
+    --shadow-float: inset 0 1px 0 rgba(255,255,255,.05), 0 18px 40px -16px rgba(0,0,0,.85);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+    padding-bottom: 80px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+  header.hero { margin-bottom: 12px; }
+  header.hero h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+  header.hero p { color: var(--muted); margin-top: 6px; font-size: 14px; max-width: 640px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600; color: #fff;
+    padding: 4px 12px; border-radius: 999px; margin-top: 14px;
+    background: var(--grad);
+  }
+  section { margin-top: 44px; }
+  h2.sec {
+    font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  h2.sec::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .grid { display: grid; gap: 18px; }
+  .grid.c2 { grid-template-columns: repeat(2, 1fr); }
+  .grid.c3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 720px) { .grid.c2, .grid.c3 { grid-template-columns: 1fr; } }
+  .lbl { display: inline-flex; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--faint); margin-bottom: 10px; }
+/* ---- palette ---- */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+  .sw { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--s1); }
+  .sw .c { height: 56px; }
+  .sw .meta { padding: 8px 10px; font-size: 11px; color: var(--muted); }
+  .sw .meta b { display: block; color: var(--ink); font-size: 12px; }
+
+  /* ---- cards ---- */
+  .card {
+    position: relative; border: 1px solid var(--line); border-radius: 18px;
+    background: linear-gradient(180deg, #1c1c24, #17171d);
+    box-shadow: var(--shadow-card); padding: 20px; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-float); border-color: var(--line2); }
+  .card.old { border-radius: 12px; background: #1a1a20; border-color: #2e2e37; box-shadow: none; }
+  .card.old:hover { transform: none; box-shadow: none; border-color: #2e2e37; }
+  .card-row { display: flex; align-items: center; gap: 14px; }
+
+  .logo {
+    width: 64px; height: 64px; flex: none; display: flex; align-items: center; justify-content: center;
+    border-radius: 16px; padding: 10px;
+    background: radial-gradient(120% 120% at 50% 0%, #2b2b34, #212129);
+    border: 1px solid var(--line);
+  }
+  .logo img { width: 100%; height: 100%; object-fit: contain; }
+  .logo.old { width: 56px; height: 56px; border-radius: 8px; padding: 0; background: #22222a; }
+  .fallback {
+    width: 64px; height: 64px; flex: none; display: flex; align-items: center; justify-content: center;
+    border-radius: 16px; font-size: 22px; font-weight: 800; color: #fff; background: var(--grad);
+    box-shadow: 0 8px 20px -8px rgba(226,55,68,.6);
+  }
+  .fallback.old { width: 56px; height: 56px; border-radius: 8px; background: #22222a; color: #6b6b76; font-size: 18px; box-shadow: none; }
+
+  .meta-name { font-weight: 650; font-size: 15px; }
+  .badge-set { display: inline-flex; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); background: var(--s2); padding: 2px 8px; border-radius: 6px; }
+  .badge-set.accent { color: var(--brand2); border-color: rgba(249,115,22,.3); background: rgba(249,115,22,.1); }
+
+  .stats-line { display: flex; gap: 18px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .stat b { display: block; font-size: 16px; font-weight: 750; }
+  .stat span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+
+  .progress { margin-top: 14px; }
+  .progress .ptext { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .progress .bar { height: 8px; border-radius: 999px; background: var(--s3); overflow: hidden; }
+  .progress .fill { height: 100%; border-radius: 999px; background: var(--grass); }
+  .progress.grad .fill { background: linear-gradient(90deg, #f97316, #e23744); }
+/* ---- stat cards ---- */
+  .statcard { padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(180deg, #1c1c24, #17171d); box-shadow: var(--shadow-card); }
+  .statcard .top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .statcard .l { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  .statcard .v { font-size: 24px; font-weight: 750; margin-top: 6px; letter-spacing: -0.01em; }
+  .statcard .icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .statcard .s { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* ---- badges ---- */
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; }
+  .b { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 8px; border: 1px solid; }
+  .b.neutral { color: var(--muted); background: var(--s2); border-color: var(--line); }
+  .b.ink { color: var(--ink); background: var(--s3); border-color: var(--line2); }
+
+  /* ---- layout mock ---- */
+  .frame { display: grid; grid-template-columns: 230px 1fr; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; min-height: 340px; box-shadow: var(--shadow-card); }
+  .sidebar { background: #131318; border-right: 1px solid var(--line); padding: 16px 12px; }
+  .sidebar .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; padding: 4px 6px 16px; }
+  .sidebar .brand .mk { width: 32px; height: 32px; border-radius: 9px; background: var(--grad); }
+  .nav { display: flex; flex-direction: column; gap: 2px; }
+  .nav a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 9px; color: var(--muted); font-size: 13px; text-decoration: none; }
+  .nav a .dot { width: 18px; height: 18px; border-radius: 5px; background: var(--s2); }
+  .nav a.active { color: var(--ink); background: var(--s2); font-weight: 600; box-shadow: inset 0 1px 0 rgba(255,255,255,.04); }
+  .nav a.active .dot { background: var(--grad); }
+  .content { background: var(--bg); padding: 24px; }
+  .content .head { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+  .content .sub { color: var(--muted); font-size: 13px; margin-top: 4px; margin-bottom: 18px; }
+  .mini-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (max-width: 720px) { .frame { grid-template-columns: 1fr; } .mini-grid { grid-template-columns: 1fr; } }
+
+  .note { font-size: 12px; color: var(--faint); margin-top: 10px; font-style: italic; }
+  .mock-img { background: repeating-linear-gradient(45deg, var(--s2), var(--s2) 6px, var(--s3) 6px, var(--s3) 12px); border-radius: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <h1>Cardocia — direction visuelle « dark premium »</h1>
+    <p>Plus de profondeur (ombres + dégradés), une identité rouge→orange distincte du type Feu, des logos enfin lisibles, et une sidebar détachée du contenu.</p>
+    <span class="pill">Maquette — à valider avant application</span>
+  </header>
+
+  <section>
+    <h2 class="sec">1 · Palette &amp; accent</h2>
+    <div class="swatches">
+      <div class="sw"><div class="c" style="background:#0e0e12"></div><div class="meta"><b>canvas</b>#0e0e12</div></div>
+      <div class="sw"><div class="c" style="background:#17171d"></div><div class="meta"><b>surface</b>#17171d</div></div>
+      <div class="sw"><div class="c" style="background:#1f1f27"></div><div class="meta"><b>surface-2</b>#1f1f27</div></div>
+      <div class="sw"><div class="c" style="background:#27272f"></div><div class="meta"><b>surface-3</b>#27272f</div></div>
+      <div class="sw"><div class="c" style="background:#2c2c36"></div><div class="meta"><b>line</b>#2c2c36</div></div>
+      <div class="sw"><div class="c" style="background:#f2f2f5"></div><div class="meta"><b>ink</b>#f2f2f5</div></div>
+      <div class="sw"><div class="c" style="background:linear-gradient(135deg,#f97316,#e23744)"></div><div class="meta"><b>brand (marque)</b>orange → rouge</div></div>
+      <div class="sw"><div class="c" style="background:#ef4444"></div><div class="meta"><b>fire (type Feu)</b>#ef4444 inchangé</div></div>
+    </div>
+    <p class="note">L'accent de marque n'est plus confondu avec le type Feu : l'identité utilise un dégradé chaud, le type Feu garde son rouge pur.</p>
+  </section>
+  <section>
+    <h2 class="sec">2 · Carte « série » — avant / après</h2>
+    <div class="grid c2">
+      <div>
+        <span class="lbl">Actuel</span>
+        <div class="card old">
+          <div class="card-row">
+            <div class="logo old"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23e23744'/%3E%3C/svg%3E" alt="" /></div>
+            <div style="min-width:0">
+              <div class="meta-name" style="font-weight:600">Écarlate et Violet — 151</div>
+              <div style="margin-top:4px"><span class="badge-set">8 séries</span></div>
+            </div>
+          </div>
+          <div class="progress" style="margin-top:14px">
+            <div class="ptext"><span>Complétion</span><span>34 / 151 (23%)</span></div>
+            <div class="bar old"><div class="fill old" style="width:23%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <span class="lbl">Proposé</span>
+        <div class="card">
+          <div class="card-row">
+            <div class="logo"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23e23744'/%3E%3C/svg%3E" alt="" /></div>
+            <div style="min-width:0">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span class="meta-name">Écarlate et Violet — 151</span>
+                <span class="badge-set accent">8 séries</span>
+              </div>
+              <div class="badges" style="margin-top:8px">
+                <span class="b neutral">#SV151</span>
+                <span class="b ink">2023</span>
+              </div>
+            </div>
+          </div>
+          <div class="stats-line">
+            <div class="stat"><b>34</b><span>possédées</span></div>
+            <div class="stat"><b>151</b><span>total</span></div>
+            <div class="stat"><b>23%</b><span>complétion</span></div>
+          </div>
+          <div class="progress">
+            <div class="ptext"><span>Complétion</span><span>23%</span></div>
+            <div class="bar"><div class="fill" style="width:23%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <h2 class="sec">3 · Logo d'extension &amp; fallback</h2>
+    <div class="grid c2">
+      <div>
+        <span class="lbl">Actuel — logo peu lisible + fallback terne</span>
+        <div class="card old">
+          <div class="card-row">
+            <div class="logo old"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 20V4h6v16z' fill='%23222'/%3E%3Cpath d='M14 20V4h6v16z' fill='%23e23744'/%3E%3C/svg%3E" alt="" /></div>
+            <div class="fallback old">S</div>
+            <p class="note" style="flex:1">56×56, sans marge, fallback = lettre grise.</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <span class="lbl">Proposé — fond clair + fallback coloré</span>
+        <div class="card">
+          <div class="card-row">
+            <div class="logo"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 20V4h6v16z' fill='%23fff'/%3E%3Cpath d='M14 20V4h6v16z' fill='%23e23744'/%3E%3C/svg%3E" alt="" /></div>
+            <div class="fallback">S</div>
+            <p class="note" style="flex:1">64×64, padding p-2, fallback = dégradé + lettre blanche.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <h2 class="sec">4 · KPI &amp; badges</h2>
+    <div class="grid c3">
+      <div class="statcard">
+        <div class="top">
+          <span class="l">Valeur collection</span>
+          <span class="icon" style="background:rgba(249,115,22,.15);color:#f97316">€</span>
+        </div>
+        <div class="v">1 240,50 €</div>
+        <div class="s">+12 % ce mois</div>
+      </div>
+      <div class="statcard">
+        <div class="top">
+          <span class="l">Cartes possédées</span>
+          <span class="icon" style="background:rgba(59,130,246,.15);color:#3b82f6">▤</span>
+        </div>
+        <div class="v">3 421</div>
+        <div class="s">612 cartes uniques</div>
+      </div>
+      <div class="statcard">
+        <div class="top">
+          <span class="l">Stock à vendre</span>
+          <span class="icon" style="background:rgba(34,197,94,.15);color:#22c55e">◎</span>
+        </div>
+        <div class="v">187</div>
+        <div class="s">36 réservés</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <span class="lbl">Badges</span>
+      <div class="badges">
+        <span class="b neutral">Brouillon</span>
+        <span class="b ink">Promo</span>
+        <span class="b" style="color:#34d399;background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.3)">Disponible</span>
+        <span class="b" style="color:#fbbf24;background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.3)">Réservé</span>
+        <span class="b" style="color:#f87171;background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.3)">Vendu</span>
+        <span class="b" style="background:var(--grad);color:#fff;border-color:transparent">Feu</span>
+        <span class="b" style="background:var(--water);color:#0b0b0d;border-color:var(--water)">Eau</span>
+      </div>
+      <p class="note">Les badges « statut » restent colorés ; le badge neutre par défaut est moins gris (mieux contrasté).</p>
+    </div>
+  </section>
+  <section>
+    <h2 class="sec">5 · Sidebar &amp; hiérarchie</h2>
+    <div class="frame">
+      <aside class="sidebar">
+        <div class="brand"><span class="mk"></span>Cardocia</div>
+        <div class="nav">
+          <a href="#"><span class="dot"></span>Tableau de bord</a>
+          <a href="#" class="active"><span class="dot"></span>Ma collection</a>
+          <a href="#"><span class="dot"></span>Stock à vendre</a>
+          <a href="#"><span class="dot"></span>Achats</a>
+          <a href="#"><span class="dot"></span>Ventes</a>
+          <a href="#"><span class="dot"></span>Statistiques</a>
+        </div>
+      </aside>
+      <div class="content">
+        <div class="head">Ma collection</div>
+        <div class="sub">Gérez vos séries et cartes possédées.</div>
+        <div class="mini-grid">
+          <div class="card" style="padding:16px">
+            <div class="card-row">
+              <div class="logo" style="width:48px;height:48px;border-radius:12px;padding:7px"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23e23744'/%3E%3C/svg%3E" alt="" /></div>
+              <div>
+                <div class="meta-name" style="font-size:14px">151</div>
+                <span class="badge-set accent">8 séries</span>
+              </div>
+            </div>
+            <div class="progress" style="margin-top:12px">
+              <div class="bar"><div class="fill" style="width:64%"></div></div>
+            </div>
+          </div>
+          <div class="card" style="padding:16px">
+            <div class="card-row">
+              <div class="logo" style="width:48px;height:48px;border-radius:12px;padding:7px"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 20V4h6v16z' fill='%23fff'/%3E%3Cpath d='M14 20V4h6v16z' fill='%233b82f6'/%3E%3C/svg%3E" alt="" /></div>
+              <div>
+                <div class="meta-name" style="font-size:14px">Évolutions</div>
+                <span class="badge-set accent">12 séries</span>
+              </div>
+            </div>
+            <div class="progress" style="margin-top:12px">
+              <div class="bar"><div class="fill" style="width:31%"></div></div>
+            </div>
+          </div>
+        </div>
+        <p class="note">Sidebar détachée (fond #131318 + bordure + ombre), cartes avec élévation au survol, onglet actif avec pastille en dégradé.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec">6 · Réglages rapides pour ajuster</h2>
+    <div class="card">
+      <p class="note" style="margin:0">Dans le fichier, tout se pilote via les variables <code>:root</code> (couleurs, dégradé, ombres) et quelques classes (<code>.card</code>, <code>.logo</code>, <code>.fallback</code>, <code>.badge-set</code>…). Dis-moi ce que tu veux changer (couleur d'accent, arrondis, densité…) et je l'applique en 2 minutes.</p>
+    </div>
+  </section>
+</div>
+</body>
+</html>

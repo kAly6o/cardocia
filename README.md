@@ -99,16 +99,13 @@ src/
 │   ├── (auth)/           # login, signup, mot de passe oublié…
 │   ├── (app)/            # Application (protégée par la session)
 │   │   ├── page.tsx      # Tableau de bord
-│   │   ├── catalogue/    # Collections → extensions → cartes
-│   │   ├── collection/   # Ma collection
+│   │   ├── collection/   # Ma collection (collections → extensions → cartes)
 │   │   ├── stock/        # Stock à vendre
 │   │   ├── achats/       # Achats (multi-lignes + réception)
 │   │   ├── ventes/       # Ventes (rentabilité)
-│   │   ├── import/       # Import CSV (assistant + anti-doublons)
 │   │   ├── lots/         # Lots
 │   │   ├── boosters/     # Boosters reconditionnés
 │   │   ├── produits/     # Produits scellés + ouvertures
-│   │   ├── fournisseurs/ # Fournisseurs
 │   │   ├── historique/   # Mouvements
 │   │   ├── statistiques/ # Statistiques + exports CSV
 │   │   ├── parametres/   # Profil + plateformes
@@ -118,7 +115,6 @@ src/
 ├── lib/
 │   ├── actions/          # Server Actions (opérations sensibles)
 │   ├── queries/          # Requêtes en lecture
-│   ├── import/           # Mapping CSV
 │   ├── supabase/         # Clients (navigateur / serveur / admin)
 │   └── …                 # types, constantes, utils, stats, csv
 └── proxy.ts              # Session + protection des routes
@@ -201,9 +197,8 @@ Déployable sur Vercel / Netlify / n'importe quel hôte Node.js :
 
 
 
-pour les booster reconditionné ajouté le stock d'emballage selon serie
+## Roadmap / Idées
 
-exemple
-
-3 booster méga evolution
-etc
+- **Stock d'emballages de boosters reconditionnés par série** (ex. « 3 boosters Méga-Évolution ») : suivre les emballages vides disponibles pour reconditionner.
+- Cote / prix de marché (tables `card_prices` et `card_price_history` déjà présentes).
+- Recherche globale de cartes, wishlist, exports CSV étendus, notifications.

@@ -62,6 +62,33 @@ export function PageHeader({
   );
 }
 
+export function SpaceBanner({
+  label,
+  accent,
+}: {
+  label: string;
+  accent: string;
+}) {
+  return (
+    <div className="relative flex items-center gap-2 overflow-hidden rounded-xl border border-line px-4 py-2.5">
+      <span
+        className="h-2.5 w-2.5 shrink-0 rounded-full"
+        style={{ backgroundColor: accent }}
+      />
+      <span
+        className="text-xs font-semibold uppercase tracking-wider"
+        style={{ color: accent }}
+      >
+        {label}
+      </span>
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 w-1/2"
+        style={{ background: `linear-gradient(90deg, transparent, ${accent}22)` }}
+      />
+    </div>
+  );
+}
+
 export function SectionTitle({
   children,
   className,

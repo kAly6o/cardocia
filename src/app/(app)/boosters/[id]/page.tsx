@@ -10,6 +10,7 @@ import { ConfirmForm } from "@/components/ui/ConfirmForm";
 import { addBoosterLine, removeBoosterLine, setBoosterStatus, deleteBooster } from "@/lib/actions/boosters";
 import { BOOSTER_STATUSES } from "@/lib/constants";
 import { formatCurrency } from "@/lib/utils";
+import { ArrowLeft } from "lucide-react";
 
 interface LineRow {
   id: string;
@@ -59,7 +60,7 @@ export default async function BoosterDetailPage({
         description="Composition réelle du booster. Le coût est calculé à partir des cartes utilisées."
         actions={
           <Link href="/lots?tab=boosters" className="text-sm text-muted transition-colors hover:text-ink">
-            ← Retour aux boosters
+            <ArrowLeft className="mr-1 inline-block h-3.5 w-3.5 align-[-2px]" />Retour aux boosters
           </Link>
         }
       />

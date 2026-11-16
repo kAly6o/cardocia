@@ -5,15 +5,17 @@
    =========================================================================== */
 
 @theme {
-  --color-canvas: #121216;
-  --color-surface: #1a1a20;
-  --color-surface-2: #22222a;
-  --color-surface-3: #2a2a33;
-  --color-line: #2e2e37;
-  --color-line-strong: #3a3a45;
-  --color-ink: #ececef;
-  --color-muted: #9b9ba6;
-  --color-faint: #6b6b76;
+  --color-canvas: #0e0e12;
+  --color-surface: #17171d;
+  --color-surface-2: #1f1f27;
+  --color-surface-3: #27272f;
+  --color-sunken: #131318;
+  --color-line: #2c2c36;
+  --color-line-strong: #3d3d4a;
+  --color-ink: #f2f2f5;
+  --color-muted: #a1a1ac;
+  --color-faint: #70707b;
+  --color-logo-bg: #f2f3f5;
 
   --color-fire: #ef4444;
   --color-water: #3b82f6;
@@ -21,8 +23,14 @@
   --color-electric: #facc15;
   --color-psy: #a855f7;
 
-  --color-brand: #ef4444;
-  --color-brand-strong: #dc2626;
+  --color-brand: #e23744;
+  --color-brand-accent: #f97316;
+  --color-brand-strong: #b91c1c;
+
+  --shadow-card: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 10px 30px -14px
+    rgb(0 0 0 / 0.75);
+  --shadow-float: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 18px 40px -16px
+    rgb(0 0 0 / 0.85);
 
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
     Arial, sans-serif;
@@ -63,11 +71,23 @@ body {
 @layer components {
   /* Carte encadrée */
   .panel {
-    @apply rounded-xl border border-line bg-surface;
+    @apply rounded-2xl border border-line bg-surface;
+    background-image: linear-gradient(
+      180deg,
+      var(--color-surface-2),
+      var(--color-surface)
+    );
+    box-shadow: var(--shadow-card);
   }
 
   .panel-pad {
-    @apply rounded-xl border border-line bg-surface p-4;
+    @apply rounded-2xl border border-line bg-surface p-5;
+    background-image: linear-gradient(
+      180deg,
+      var(--color-surface-2),
+      var(--color-surface)
+    );
+    box-shadow: var(--shadow-card);
   }
 
   /* Champ de formulaire */
@@ -78,17 +98,17 @@ body {
   .input {
     @apply w-full rounded-lg border border-line bg-surface-2 px-3 py-2 text-sm text-ink
       outline-none transition-colors placeholder:text-faint
-      focus:border-line-strong focus:ring-2 focus:ring-fire/40;
+      focus:border-line-strong focus:ring-2 focus:ring-brand/40;
   }
 
   .select {
     @apply w-full rounded-lg border border-line bg-surface-2 px-3 py-2 text-sm text-ink
-      outline-none transition-colors focus:border-line-strong focus:ring-2 focus:ring-fire/40;
+      outline-none transition-colors focus:border-line-strong focus:ring-2 focus:ring-brand/40;
   }
 
   .textarea {
     @apply w-full rounded-lg border border-line bg-surface-2 px-3 py-2 text-sm text-ink
       outline-none transition-colors placeholder:text-faint
-      focus:border-line-strong focus:ring-2 focus:ring-fire/40;
+      focus:border-line-strong focus:ring-2 focus:ring-brand/40;
   }
 }

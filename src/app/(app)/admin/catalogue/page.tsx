@@ -10,6 +10,7 @@ import { CardFormModal, type CardSetOption } from "@/components/admin/CardFormMo
 import { deleteCollection, deleteSet, deleteCard } from "@/lib/actions/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { cn, formatDate } from "@/lib/utils";
+import { Pencil, Trash2 } from "lucide-react";
 
 type Tab = "collections" | "sets" | "cards";
 
@@ -155,11 +156,11 @@ export default async function AdminCataloguePage({
                           logo: null,
                           sort_order: c.sort_order,
                         }}
-                        trigger={<IconButton title="Modifier">✎</IconButton>}
+                        trigger={<IconButton title="Modifier"><Pencil className="h-4 w-4" /></IconButton>}
                       />
                       <ConfirmForm action={deleteCollection} message="Supprimer cette collection et toutes ses extensions/cartes ?">
                         <input type="hidden" name="id" value={c.id} />
-                        <IconButton type="submit" title="Supprimer" className="hover:bg-red-900/30 hover:text-red-300">🗑</IconButton>
+                        <IconButton type="submit" title="Supprimer" className="hover:bg-red-900/30 hover:text-red-300"><Trash2 className="h-4 w-4" /></IconButton>
                       </ConfirmForm>
                     </div>
                   </Td>
@@ -214,11 +215,11 @@ export default async function AdminCataloguePage({
                           card_count: s.card_count,
                         }}
                         collections={collectionOptions}
-                        trigger={<IconButton title="Modifier">✎</IconButton>}
+                        trigger={<IconButton title="Modifier"><Pencil className="h-4 w-4" /></IconButton>}
                       />
                       <ConfirmForm action={deleteSet} message="Supprimer cette extension et toutes ses cartes ?">
                         <input type="hidden" name="id" value={s.id} />
-                        <IconButton type="submit" title="Supprimer" className="hover:bg-red-900/30 hover:text-red-300">🗑</IconButton>
+                        <IconButton type="submit" title="Supprimer" className="hover:bg-red-900/30 hover:text-red-300"><Trash2 className="h-4 w-4" /></IconButton>
                       </ConfirmForm>
                     </div>
                   </Td>
@@ -281,11 +282,11 @@ export default async function AdminCataloguePage({
                           description: c.description,
                         }}
                         sets={setOptions}
-                        trigger={<IconButton title="Modifier">✎</IconButton>}
+                        trigger={<IconButton title="Modifier"><Pencil className="h-4 w-4" /></IconButton>}
                       />
                       <ConfirmForm action={deleteCard} message="Supprimer cette carte du catalogue ?">
                         <input type="hidden" name="id" value={c.id} />
-                        <IconButton type="submit" title="Supprimer" className="hover:bg-red-900/30 hover:text-red-300">🗑</IconButton>
+                        <IconButton type="submit" title="Supprimer" className="hover:bg-red-900/30 hover:text-red-300"><Trash2 className="h-4 w-4" /></IconButton>
                       </ConfirmForm>
                     </div>
                   </Td>

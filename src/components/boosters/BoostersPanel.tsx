@@ -10,6 +10,7 @@ import { RecipeFormModal } from "@/components/boosters/RecipeFormModal";
 import { deleteRecipe, createBooster, deleteBooster, adjustBoosterSleeve } from "@/lib/actions/boosters";
 import type { CompositionRule } from "@/lib/compose";
 import { formatCurrency } from "@/lib/utils";
+import { ArrowRight, Pencil, Trash2 } from "lucide-react";
 
 export async function BoostersPanel() {
   const user = await requireUser();
@@ -136,12 +137,12 @@ export async function BoostersPanel() {
                         description: r.description,
                         quotas: r.quotas,
                       }}
-                      trigger={<IconButton title="Modifier">✎</IconButton>}
+                      trigger={<IconButton title="Modifier"><Pencil className="h-4 w-4" /></IconButton>}
                     />
                     <ConfirmForm action={deleteRecipe} message="Supprimer cette recette ?">
                       <input type="hidden" name="id" value={r.id} />
                       <IconButton type="submit" title="Supprimer" className="hover:bg-red-900/30 hover:text-red-300">
-                        🗑
+                        <Trash2 className="h-4 w-4" />
                       </IconButton>
                     </ConfirmForm>
                   </div>
@@ -210,12 +211,12 @@ export async function BoostersPanel() {
                 <Td>
                   <div className="flex items-center gap-1">
                     <Link href={`/boosters/${b.id}`}>
-                      <IconButton title="Composer">→</IconButton>
+                      <IconButton title="Composer"><ArrowRight className="h-4 w-4" /></IconButton>
                     </Link>
                     <ConfirmForm action={deleteBooster} message="Supprimer ce booster ? Les cartes seront libérées.">
                       <input type="hidden" name="id" value={b.id} />
                       <IconButton type="submit" title="Supprimer" className="hover:bg-red-900/30 hover:text-red-300">
-                        🗑
+                        <Trash2 className="h-4 w-4" />
                       </IconButton>
                     </ConfirmForm>
                   </div>

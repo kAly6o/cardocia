@@ -9,6 +9,7 @@ import { StatusBadge } from "@/components/ui/Badge";
 import { ConfirmForm } from "@/components/ui/ConfirmForm";
 import { deletePurchase } from "@/lib/actions/purchases";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { ArrowRight, Trash2 } from "lucide-react";
 
 interface Row {
   id: string;
@@ -72,12 +73,12 @@ export default async function PurchasesPage() {
               <Td>
                 <div className="flex items-center gap-1">
                   <Link href={`/achats/${p.id}`}>
-                    <IconButton title="Voir le détail">→</IconButton>
+                    <IconButton title="Voir le détail"><ArrowRight className="h-4 w-4" /></IconButton>
                   </Link>
                   <ConfirmForm action={deletePurchase} message="Supprimer cet achat et ses lignes ?">
                     <input type="hidden" name="id" value={p.id} />
                     <IconButton type="submit" title="Supprimer" className="hover:bg-red-900/30 hover:text-red-300">
-                      🗑
+                      <Trash2 className="h-4 w-4" />
                     </IconButton>
                   </ConfirmForm>
                 </div>

@@ -14,6 +14,7 @@ import { getSet } from "@/lib/queries/catalogue";
 import { getSetCardsTracker } from "@/lib/queries/collection";
 import { RARITIES, POKEMON_TYPE_LABELS } from "@/lib/constants";
 import { formatNumber, formatCurrency, cn } from "@/lib/utils";
+import { ArrowLeft, ArrowRight, Pencil, Trash2 } from "lucide-react";
 
 const FINISH_BUTTONS: {
   key: "normal" | "reverse" | "holo";
@@ -93,7 +94,7 @@ export default async function CollectionSetPage({
             href={`/collection/${set.collection_id}`}
             className="text-sm text-muted transition-colors hover:text-ink"
           >
-            ← Extensions
+            <ArrowLeft className="mr-1 inline-block h-3.5 w-3.5 align-[-2px]" />Extensions
           </Link>
         }
       />
@@ -241,13 +242,13 @@ export default async function CollectionSetPage({
                         location: i.location,
                         cardLabel: i.card ? `${i.card.name} n°${i.card.number}` : undefined,
                       }}
-                      trigger={<IconButton title="Modifier">✎</IconButton>}
+                      trigger={<IconButton title="Modifier"><Pencil className="h-4 w-4" /></IconButton>}
                     />
                     <form action={transferToStock}>
                       <input type="hidden" name="id" value={i.id} />
                       <input type="hidden" name="quantity" value={i.quantity} />
                       <IconButton type="submit" title="Transférer vers le stock">
-                        →
+                        <ArrowRight className="h-4 w-4" />
                       </IconButton>
                     </form>
                     <ConfirmForm
@@ -260,7 +261,7 @@ export default async function CollectionSetPage({
                         title="Supprimer"
                         className="hover:bg-red-900/30 hover:text-red-300"
                       >
-                        🗑
+                        <Trash2 className="h-4 w-4" />
                       </IconButton>
                     </ConfirmForm>
                   </div>

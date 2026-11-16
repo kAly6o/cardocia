@@ -10,6 +10,7 @@ import { ConfirmForm } from "@/components/ui/ConfirmForm";
 import { addToLot, removeLotLine, setLotStatus, deleteLot } from "@/lib/actions/lots";
 import { LOT_STATUSES } from "@/lib/constants";
 import { formatCurrency } from "@/lib/utils";
+import { ArrowLeft } from "lucide-react";
 
 interface LineRow {
   id: string;
@@ -60,7 +61,7 @@ export default async function LotDetailPage({
         description={lot.description ?? "Lot de cartes."}
         actions={
           <Link href="/lots" className="text-sm text-muted transition-colors hover:text-ink">
-            ← Retour aux lots
+            <ArrowLeft className="mr-1 inline-block h-3.5 w-3.5 align-[-2px]" />Retour aux lots
           </Link>
         }
       />

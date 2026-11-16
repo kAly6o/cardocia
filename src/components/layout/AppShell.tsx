@@ -2,6 +2,7 @@
 
 import { Fragment, useState, useEffect } from "react";
 import Link from "next/link";
+import { LogOut, Menu, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { NAV_ITEMS, ADMIN_NAV_ITEMS, BOTTOM_NAV_ITEMS, type NavItem } from "./navigation";
 import { Brand } from "@/components/Brand";
@@ -34,7 +35,7 @@ function NavLinks({
             : "text-muted hover:bg-surface-2/60 hover:text-ink",
         )}
       >
-        <span className={cn(active ? "text-fire" : "text-faint")}>
+        <span className={cn(active ? "text-brand" : "text-faint")}>
           {item.icon}
         </span>
         {item.label}
@@ -96,18 +97,7 @@ function UserMenu({
           type="submit"
           className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted transition-colors hover:bg-surface-2 hover:text-ink"
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.8}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="h-5 w-5"
-            aria-hidden
-          >
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
-          </svg>
+          <LogOut className="h-5 w-5" />
           Se déconnecter
         </button>
       </form>
@@ -141,7 +131,7 @@ export function AppShell({
   return (
     <div className="min-h-full">
       {/* Sidebar desktop */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-line bg-surface lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-line bg-sunken lg:flex">
         <div className="flex h-16 items-center border-b border-line px-5">
           <Brand />
         </div>
@@ -166,7 +156,7 @@ export function AppShell({
                 aria-label="Fermer le menu"
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-ink"
               >
-                ✕
+                <X className="h-5 w-5" />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto px-3 py-4">
@@ -184,17 +174,7 @@ export function AppShell({
           aria-label="Ouvrir le menu"
           className="flex h-9 w-9 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-ink"
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            className="h-5 w-5"
-            aria-hidden
-          >
-            <path d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          <Menu className="h-5 w-5" />
         </button>
         <Brand />
       </header>
@@ -222,7 +202,7 @@ export function AppShell({
                     className="flex flex-col items-center justify-center gap-1 h-full w-full"
                   >
                     <span>{item.icon}</span>
-                    <span className={`text-xs font-medium ${active ? "text-primary" : "text-muted"}`}>
+                    <span className={`text-xs font-medium ${active ? "text-brand" : "text-muted"}`}>
                       {item.label}
                     </span>
                   </button>

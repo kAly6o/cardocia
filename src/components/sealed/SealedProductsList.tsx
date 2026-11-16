@@ -7,6 +7,7 @@ import { SealedFormModal } from "@/components/sealed/SealedFormModal";
 import { openProduct, deleteSealedProduct } from "@/lib/actions/sealed";
 import { languageLabel } from "@/lib/constants";
 import { formatCurrency } from "@/lib/utils";
+import { PackageOpen, Trash2 } from "lucide-react";
 
 interface Row {
   id: string;
@@ -64,12 +65,12 @@ export async function SealedProductsList() {
                     <form action={openProduct} className="flex items-center gap-1">
                       <input type="hidden" name="id" value={p.id} />
                       <input type="hidden" name="quantity" value={1} />
-                      <IconButton type="submit" title="Ouvrir 1 unité">📦</IconButton>
+                      <IconButton type="submit" title="Ouvrir 1 unité"><PackageOpen className="h-4 w-4" /></IconButton>
                     </form>
                   )}
                   <ConfirmForm action={deleteSealedProduct} message="Supprimer ce produit scellé ?">
                     <input type="hidden" name="id" value={p.id} />
-                    <IconButton type="submit" title="Supprimer" className="hover:bg-red-900/30 hover:text-red-300">🗑</IconButton>
+                    <IconButton type="submit" title="Supprimer" className="hover:bg-red-900/30 hover:text-red-300"><Trash2 className="h-4 w-4" /></IconButton>
                   </ConfirmForm>
                 </div>
               </Td>

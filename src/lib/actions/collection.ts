@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/get-user";
 import { createClient } from "@/lib/supabase/server";
 import { toNumber, toInt } from "@/lib/utils";
+import { quickAddOrIncrement } from "./quick-add";
 import type { ActionState } from "@/components/ui/Form";
 
 export async function saveCollectionItem(
@@ -53,8 +54,8 @@ export async function saveCollectionItem(
     });
   }
 
-  revalidatePath("/collection", "layout");
-  revalidatePath("/");
+  await revalidatePath("/collection", "layout");
+  await revalidatePath("/");
   return { success: id ? "Exemplaire modifié." : "Exemplaire ajouté à la collection." };
 }
 
@@ -63,37 +64,15 @@ export async function quickAddCard(formData: FormData): Promise<void> {
   const cardId = String(formData.get("card_id") ?? "");
   const finish = String(formData.get("finish") ?? "Normale");
   if (!cardId) return;
+
+  await quickAddOrIncrement({
+    table: "collection_items",
+    userId: user.id,
+    cardId,
+    finish,
+  });
+
   const supabase = await createClient();
-
-  // Exemplaire "par défaut" (FR / Near Mint) : incrémente s'il existe, sinon crée.
-  const { data: existing } = await supabase
-    .from("collection_items")
-    .select("id, quantity")
-    .eq("user_id", user.id)
-    .eq("card_id", cardId)
-    .eq("language", "FR")
-    .eq("condition", "Near Mint")
-    .eq("finish", finish)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (existing) {
-    await supabase
-      .from("collection_items")
-      .update({ quantity: (existing.quantity ?? 0) + 1 })
-      .eq("id", existing.id);
-  } else {
-    await supabase.from("collection_items").insert({
-      user_id: user.id,
-      card_id: cardId,
-      language: "FR",
-      condition: "Near Mint",
-      finish,
-      quantity: 1,
-    });
-  }
-
   await supabase.from("stock_movements").insert({
     user_id: user.id,
     type: "Ajout",
@@ -102,8 +81,8 @@ export async function quickAddCard(formData: FormData): Promise<void> {
     notes: "Ajout rapide à la collection",
   });
 
-  revalidatePath("/collection", "layout");
-  revalidatePath("/");
+  await revalidatePath("/collection", "layout");
+  await revalidatePath("/");
 }
 
 export async function deleteCollectionItem(formData: FormData): Promise<void> {
@@ -134,8 +113,8 @@ export async function deleteCollectionItem(formData: FormData): Promise<void> {
     notes: "Exemplaire supprimé de la collection",
   });
 
-  revalidatePath("/collection", "layout");
-  revalidatePath("/");
+  await revalidatePath("/collection", "layout");
+  await revalidatePath("/");
 }
 
 export async function transferToStock(formData: FormData): Promise<void> {
@@ -195,9 +174,9 @@ export async function transferToStock(formData: FormData): Promise<void> {
     notes: "Transfert vers le stock à vendre",
   });
 
-  revalidatePath("/collection", "layout");
-  revalidatePath("/stock");
-  revalidatePath("/");
+  await revalidatePath("/collection", "layout");
+  await revalidatePath("/stock");
+  await revalidatePath("/");
 }
 
 export async function toggleTrackSet(formData: FormData): Promise<void> {
@@ -223,6 +202,6 @@ export async function toggleTrackSet(formData: FormData): Promise<void> {
     await supabase.from("tracked_sets").insert({ user_id: user.id, set_id: setId });
   }
 
-  revalidatePath("/collection", "layout");
-  revalidatePath("/");
+  await revalidatePath("/collection", "layout");
+  await revalidatePath("/");
 }

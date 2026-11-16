@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/get-user";
-import { PageHeader } from "@/components/ui/StatCard";
+import { PageHeader, SpaceBanner } from "@/components/ui/StatCard";
 import { EmptyState } from "@/components/ui/Button";
 import { getCollection } from "@/lib/queries/catalogue";
 import { getSetTracker } from "@/lib/queries/collection";
 import { toggleTrackSet } from "@/lib/actions/collection";
 import { formatNumber, logoUrl, cn } from "@/lib/utils";
+import { LogoImage } from "@/components/cards/LogoImage";
+import { ArrowLeft, Star } from "lucide-react";
 
 export default async function CollectionSetsPage({
   params,
@@ -41,12 +43,13 @@ export default async function CollectionSetsPage({
 
   return (
     <div className="space-y-6">
+      <SpaceBanner label="Ma collection" accent="#22c55e" />
       <PageHeader
         title={collection.name}
         description="Extensions de cette collection — suivez celles que vous collectionnez."
         actions={
           <Link href="/collection" className="text-sm text-muted transition-colors hover:text-ink">
-            ← Suivi
+            <ArrowLeft className="mr-1 inline-block h-3.5 w-3.5 align-[-2px]" />Suivi
           </Link>
         }
       />
@@ -66,54 +69,56 @@ export default async function CollectionSetsPage({
           description="Aucune extension à afficher avec ce filtre."
         />
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {visible.map((s) => (
-            <div key={s.id} className="panel-pad">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-2">
-                  {logoUrl(s.logo) ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={logoUrl(s.logo)!} alt={s.name} className="h-full w-full object-contain" />
-                  ) : (
-                    <span className="text-lg font-bold text-muted">{s.name.charAt(0)}</span>
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <Link
-                      href={`/collection/set/${s.id}`}
-                      className="min-w-0 truncate font-semibold text-ink transition-colors hover:text-fire"
+            <div
+              key={s.id}
+              className="overflow-hidden rounded-2xl border border-line bg-surface shadow-card transition-all hover:-translate-y-0.5 hover:border-grass/50 hover:shadow-float"
+            >
+              <div className="flex h-28 items-center justify-center border-b border-line bg-logo-bg p-4 sm:h-36">
+                <LogoImage
+                  src={logoUrl(s.logo)}
+                  alt={s.name}
+                  fallback={s.name.charAt(0)}
+                  className="h-full w-full object-contain"
+                  fallbackClassName="h-16 w-16 text-2xl"
+                />
+              </div>
+              <div className="p-4 sm:p-5">
+                <div className="flex items-start justify-between gap-2">
+                  <Link
+                    href={`/collection/set/${s.id}`}
+                    className="min-w-0 truncate font-semibold text-ink transition-colors hover:text-brand"
+                  >
+                    {s.name}
+                  </Link>
+                  <form action={toggleTrackSet}>
+                    <input type="hidden" name="set_id" value={s.id} />
+                    <button
+                      type="submit"
+                      className={cn(
+                        "shrink-0 rounded-md border px-2 py-0.5 text-xs font-medium transition-colors",
+                        s.tracked
+                          ? "border-brand/60 bg-brand/10 text-brand"
+                          : "border-line text-muted hover:bg-surface-2 hover:text-ink",
+                      )}
                     >
-                      {s.name}
-                    </Link>
-                    <form action={toggleTrackSet}>
-                      <input type="hidden" name="set_id" value={s.id} />
-                      <button
-                        type="submit"
-                        className={cn(
-                          "shrink-0 rounded-md border px-2 py-0.5 text-xs font-medium transition-colors",
-                          s.tracked
-                            ? "border-brand text-brand"
-                            : "border-line text-muted hover:bg-surface-2 hover:text-ink",
-                        )}
-                      >
-                        {s.tracked ? "★ Suivie" : "Suivre"}
-                      </button>
-                    </form>
+                      {s.tracked ? <><Star className="mr-1 inline-block h-3 w-3 align-[-2px]" />Suivie</> : "Suivre"}
+                    </button>
+                  </form>
+                </div>
+                <p className="mt-2 text-xs text-muted">
+                  {formatNumber(s.ownedDistinct)} / {formatNumber(s.card_count ?? 0)} cartes ·{" "}
+                  {formatNumber(s.ownedQuantity)} ex.
+                </p>
+                <div className="mt-4 flex items-center gap-3">
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-3">
+                    <div
+                      className="h-full rounded-full bg-grass"
+                      style={{ width: `${s.percent}%` }}
+                    />
                   </div>
-                  <p className="mt-1 text-xs text-muted">
-                    {formatNumber(s.ownedDistinct)} / {formatNumber(s.card_count ?? 0)} cartes ·{" "}
-                    {formatNumber(s.ownedQuantity)} ex.
-                  </p>
-                  <div className="mt-3 flex items-center gap-3">
-                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-3">
-                      <div
-                        className="h-full rounded-full bg-grass"
-                        style={{ width: `${s.percent}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-semibold tabular-nums text-ink">{s.percent}%</span>
-                  </div>
+                  <span className="text-sm font-semibold tabular-nums text-ink">{s.percent}%</span>
                 </div>
               </div>
             </div>

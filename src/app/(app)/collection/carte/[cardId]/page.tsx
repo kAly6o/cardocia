@@ -13,6 +13,7 @@ import { transferToStock, deleteCollectionItem } from "@/lib/actions/collection"
 import { getCard } from "@/lib/queries/catalogue";
 import { buttonVariants } from "@/components/ui/buttonVariants";
 import { formatCurrency } from "@/lib/utils";
+import { ArrowLeft, ArrowRight, Pencil, Trash2 } from "lucide-react";
 
 interface ItemRow {
   id: string;
@@ -55,7 +56,7 @@ export default async function CollectionCardPage({
             href={`/collection/set/${card.set_id}`}
             className="text-sm text-muted transition-colors hover:text-ink"
           >
-            ← Extension
+            <ArrowLeft className="mr-1 inline-block h-3.5 w-3.5 align-[-2px]" />Extension
           </Link>
         }
       />
@@ -135,13 +136,13 @@ export default async function CollectionCardPage({
                         location: i.location,
                         cardLabel: `${card.name} n°${card.number}`,
                       }}
-                      trigger={<IconButton title="Modifier">✎</IconButton>}
+                      trigger={<IconButton title="Modifier"><Pencil className="h-4 w-4" /></IconButton>}
                     />
                     <form action={transferToStock}>
                       <input type="hidden" name="id" value={i.id} />
                       <input type="hidden" name="quantity" value={i.quantity} />
                       <IconButton type="submit" title="Transférer vers le stock">
-                        →
+                        <ArrowRight className="h-4 w-4" />
                       </IconButton>
                     </form>
                     <ConfirmForm
@@ -154,7 +155,7 @@ export default async function CollectionCardPage({
                         title="Supprimer"
                         className="hover:bg-red-900/30 hover:text-red-300"
                       >
-                        🗑
+                        <Trash2 className="h-4 w-4" />
                       </IconButton>
                     </ConfirmForm>
                   </div>

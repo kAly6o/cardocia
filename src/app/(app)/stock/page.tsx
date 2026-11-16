@@ -1,23 +1,10 @@
 import { requireUser } from "@/lib/get-user";
-import { createClient } from "@/lib/supabase/server";
-import { PageHeader } from "@/components/ui/StatCard";
+import { PageHeader, SpaceBanner } from "@/components/ui/StatCard";
 import { EmptyState } from "@/components/ui/Button";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { StockFormModal } from "@/components/stock/StockFormModal";
-import { logoUrl } from "@/lib/utils";
+import { cn, logoUrl, formatNumber } from "@/lib/utils";
 import { LogoImage } from "@/components/cards/LogoImage";
-
-interface TrackedCollection {
-  id: string;
-  name: string;
-  slug: string;
-  logo: string | null;
-  setCount: number;
-  ownedDistinct: number;
-  totalCards: number;
-  percent: number;
-}
+import { getStockCollectionTracker } from "@/lib/queries/stock";
 
 export default async function StockPage({
   searchParams,
@@ -28,84 +15,13 @@ export default async function StockPage({
   const sp = await searchParams;
   const filter = sp.filter ?? "all";
 
-  const supabase = await createClient();
-
-  const [setsRes, itemsRes] = await Promise.all([
-    supabase
-      .from("catalog_sets")
-      .select("id, name, logo, card_count, collection:catalog_collections(name)")
-      .order("release_date", { ascending: true, nullsFirst: false })
-      .order("name"),
-    supabase
-      .from("stock_items")
-      .select("id, card_id, quantity, status, card:catalog_cards(set_id, name)")
-      .eq("user_id", user.id),
-  ]);
-
-  const sets = (setsRes.data ?? []) as unknown as {
-    id: string;
-    name: string;
-    logo: string | null;
-    card_count: number | null;
-    collection: { name: string } | null;
-  }[];
-  const items = (itemsRes.data ?? []) as unknown as {
-    id: string;
-    card_id: string;
-    quantity: number;
-    status: string;
-    card: { set_id: string; name: string } | null;
-  }[];
-  const ownedBySet = new Map<string, { distinct: Set<string>; quantity: number }>();
-  for (const it of items) {
-    const setId = it.card?.set_id;
-    if (!setId) continue;
-    const e = ownedBySet.get(setId) ?? { distinct: new Set<string>(), quantity: 0 };
-    e.distinct.add(it.card_id);
-    e.quantity += it.quantity ?? 0;
-    ownedBySet.set(setId, e);
-  }
-
-  const collectionsMap: Map<string, { name: string; sets: { id: string; name: string; logo: string | null; card_count: number | null; collection: { name: string } | null }[] }> = new Map();
-  for (const s of sets) {
-    const collName = s.collection?.name ?? "Autres";
-    let c = collectionsMap.get(collName);
-    if (!c) {
-      c = { name: collName, sets: [] };
-      collectionsMap.set(collName, c);
-    }
-    c.sets.push(s);
-  }
-
-  const collectionsOut: TrackedCollection[] = [];
-  for (const [collName, c] of collectionsMap) {
-    let owned = 0;
-    let total = 0;
-    for (const set of c.sets) {
-      const s = set as { id: string; name: string; logo: string | null; card_count: number | null; collection: { name: string } | null };
-      total += s.card_count ?? 0;
-      const o = ownedBySet.get(s.id);
-      owned += o?.distinct.size ?? 0;
-    }
-    collectionsOut.push({
-      id: collName,
-      name: collName,
-      slug: collName.toLowerCase(),
-      logo: c.sets[0]?.logo ?? null,
-      setCount: c.sets.length,
-      ownedDistinct: owned,
-      totalCards: total,
-      percent: total > 0 ? Math.round((owned / total) * 100) : 0,
-    });
-  }
+  const { collections: collectionsOut, totalStockItems, available } =
+    await getStockCollectionTracker(user.id);
 
   const collections =
     filter === "owned"
-      ? collectionsOut.filter((c) => c.ownedDistinct > 0)
+      ? collectionsOut.filter((c) => c.inStockQuantity > 0)
       : collectionsOut;
-
-  const totalStockItems = items.length;
-  const available = items.filter((i) => i.status === "Disponible").reduce((s, i) => s + i.quantity, 0);
 
   const tabBar = (
     <div className="flex flex-wrap gap-2">
@@ -136,52 +52,47 @@ export default async function StockPage({
 
   return (
     <div className="space-y-6">
+      <SpaceBanner label="Stock à vendre" accent="#f97316" />
       <PageHeader
         title="Stock à vendre"
         description={`${totalStockItems} article${totalStockItems > 1 ? "s" : ""} · ${available} disponible${available > 1 ? "s" : ""}.`}
-        actions={<StockFormModal />}
       />
 
       {tabBar}
 
       {collections.length === 0 ? (
         <EmptyState
-          title="Aucune série en stock"
+          title="Aucune collection en stock"
           description="Ajoutez des cartes à vendre depuis le catalogue ou transférez-les depuis votre collection."
-          action={<StockFormModal />}
         />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {collections.map((c) => (
             <Link
               key={c.id}
-              href={`/stock/${c.slug}`}
-              className="panel-pad transition-colors hover:border-line-strong"
+              href={`/stock/${c.id}`}
+              className="group overflow-hidden rounded-2xl border border-line bg-surface shadow-card transition-all hover:-translate-y-0.5 hover:border-brand-accent/50 hover:shadow-float"
             >
-              <div className="flex items-center gap-3">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-2">
-                  <LogoImage src={logoUrl(c.logo)} alt={c.name} fallback={c.name.charAt(0)} className="h-full w-full object-contain" />
+              <div className="flex h-28 items-center justify-center border-b border-line bg-logo-bg p-4 sm:h-36">
+                <LogoImage
+                  src={logoUrl(c.logo)}
+                  alt={c.name}
+                  fallback={c.name.charAt(0)}
+                  className="h-full w-full object-contain"
+                  fallbackClassName="h-16 w-16 text-2xl"
+                />
+              </div>
+              <div className="p-4 sm:p-5">
+                <div className="flex items-start justify-between gap-2">
+                  <h2 className="min-w-0 truncate font-semibold text-ink">{c.name}</h2>
+                  <span className="shrink-0 rounded-md border border-brand-accent/30 bg-brand-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-accent">
+                    {c.setCount} série{c.setCount > 1 ? "s" : ""}
+                  </span>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <h2 className="truncate font-semibold text-ink">{c.name}</h2>
-                    <span className="shrink-0 rounded-md border border-line bg-surface-2 px-2 py-0.5 text-xs text-muted">
-                      {c.setCount} série{c.setCount > 1 ? "s" : ""}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs text-muted">
-                    {c.ownedDistinct} / {c.totalCards} cartes en stock
-                  </p>
-                  <div className="mt-3 flex items-center gap-3">
-                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-3">
-                      <div
-                        className="h-full rounded-full bg-grass"
-                        style={{ width: `${c.percent}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-semibold tabular-nums text-ink">{c.percent}%</span>
-                  </div>
-                </div>
+                <p className="mt-1 text-xs text-muted">
+                  {formatNumber(c.inStockDistinct)} carte{c.inStockDistinct > 1 ? "s" : ""} ·{" "}
+                  {formatNumber(c.inStockQuantity)} exemplaire{c.inStockQuantity > 1 ? "s" : ""} en stock
+                </p>
               </div>
             </Link>
           ))}

@@ -1,23 +1,31 @@
 "use client";
 
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 export function LogoImage({
   src,
   alt,
   fallback,
   className,
+  fallbackClassName,
 }: {
   src?: string | null;
   alt: string;
   fallback?: string;
   className?: string;
+  fallbackClassName?: string;
 }) {
   const [error, setError] = useState(false);
 
   if (!src || error) {
     return (
-      <span className="flex h-full w-full items-center justify-center text-xl font-bold text-muted">
+      <span
+        className={cn(
+          "flex items-center justify-center rounded-xl bg-gradient-to-br from-brand-accent to-brand font-bold text-white",
+          fallbackClassName ?? "h-14 w-14 text-xl",
+        )}
+      >
         {fallback ?? "?"}
       </span>
     );

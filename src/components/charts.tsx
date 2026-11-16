@@ -103,9 +103,9 @@ export function MonthlyBars({ data }: { data: MonthlyDatum[] }) {
 
   return (
     <div>
-      <div className="flex items-end gap-2">
+      <div className="flex items-end gap-2 overflow-x-auto pb-1">
         {data.map((d) => (
-          <div key={d.label} className="flex flex-1 flex-col items-center gap-1.5">
+          <div key={d.label} className="flex min-w-[40px] flex-1 flex-col items-center gap-1.5">
             <div className="flex h-40 w-full items-end justify-center gap-1">
               <div
                 title={`Achats : ${d.achats}`}
@@ -123,7 +123,7 @@ export function MonthlyBars({ data }: { data: MonthlyDatum[] }) {
                 style={{ height: `${(n(d.profit) / max) * 100}%` }}
               />
             </div>
-            <span className="text-[10px] text-muted">{d.label}</span>
+            <span className="whitespace-nowrap text-[10px] text-muted">{d.label}</span>
           </div>
         ))}
       </div>

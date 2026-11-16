@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/get-user";
 import { createClient } from "@/lib/supabase/server";
 import { toNumber, toInt } from "@/lib/utils";
+import { quickAddOrIncrement } from "./quick-add";
 import type { ActionState } from "@/components/ui/Form";
 
 export async function saveStockItem(
@@ -53,8 +54,8 @@ export async function saveStockItem(
     });
   }
 
-  revalidatePath("/stock");
-  revalidatePath("/");
+  await revalidatePath("/stock", "layout");
+  await revalidatePath("/");
   return { success: id ? "Article modifié." : "Article ajouté au stock." };
 }
 
@@ -86,8 +87,8 @@ export async function deleteStockItem(formData: FormData): Promise<void> {
     notes: "Article supprimé du stock",
   });
 
-  revalidatePath("/stock");
-  revalidatePath("/");
+  await revalidatePath("/stock", "layout");
+  await revalidatePath("/");
 }
 
 export async function setStockStatus(formData: FormData): Promise<void> {
@@ -133,6 +134,34 @@ export async function setStockStatus(formData: FormData): Promise<void> {
     notes: `Changement de statut : ${item.status} → ${target}`,
   });
 
-  revalidatePath("/stock");
-  revalidatePath("/");
+  await revalidatePath("/stock", "layout");
+  await revalidatePath("/");
+}
+
+export async function quickAddStock(formData: FormData): Promise<void> {
+  const user = await requireUser();
+  const cardId = String(formData.get("card_id") ?? "");
+  const finish = String(formData.get("finish") ?? "Normale");
+  if (!cardId) return;
+
+  await quickAddOrIncrement({
+    table: "stock_items",
+    userId: user.id,
+    cardId,
+    finish,
+    status: "Disponible",
+    extra: { entered_at: new Date().toISOString().slice(0, 10) },
+  });
+
+  const supabase = await createClient();
+  await supabase.from("stock_movements").insert({
+    user_id: user.id,
+    type: "Ajout",
+    card_id: cardId,
+    quantity: 1,
+    notes: "Ajout rapide au stock",
+  });
+
+  await revalidatePath("/stock", "layout");
+  await revalidatePath("/");
 }

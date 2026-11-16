@@ -8,6 +8,7 @@ import { StatusBadge, LanguageBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { receivePurchase } from "@/lib/actions/purchases";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { ArrowLeft } from "lucide-react";
 
 export default async function PurchaseDetailPage({
   params,
@@ -39,7 +40,7 @@ export default async function PurchaseDetailPage({
         description={`${formatDate(purchase.purchase_date)} · ${purchase.seller_name ?? "Vendeur inconnu"}`}
         actions={
           <Link href="/achats" className="text-sm text-muted transition-colors hover:text-ink">
-            ← Retour aux achats
+            <ArrowLeft className="mr-1 inline-block h-3.5 w-3.5 align-[-2px]" />Retour aux achats
           </Link>
         }
       />

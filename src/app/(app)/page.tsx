@@ -2,10 +2,11 @@ import Link from "next/link";
 import { requireUser } from "@/lib/get-user";
 import { getDashboardStats } from "@/lib/stats";
 import { createClient } from "@/lib/supabase/server";
-import { StatCard, PageHeader } from "@/components/ui/StatCard";
+import { StatCard, PageHeader, SectionTitle } from "@/components/ui/StatCard";
 import { MonthlyBars, Donut, BarList } from "@/components/charts";
 import { Badge } from "@/components/ui/Badge";
 import { formatCurrency, formatNumber, formatDate } from "@/lib/utils";
+import { Gem, Gift, Layers, PackageCheck, Pin, ShoppingCart, Tags, TrendingUp, Wallet } from "lucide-react";
 
 export default async function DashboardPage() {
   const user = await requireUser();
@@ -51,24 +52,81 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Indicateurs */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
-        <StatCard label="Exemplaires possédés" value={formatNumber(stats.totalOwned)} accent="#a855f7" />
-        <StatCard label="Cartes différentes" value={formatNumber(stats.distinctCards)} accent="#3b82f6" />
-        <StatCard label="En collection" value={formatNumber(stats.collectionCount)} accent="#22c55e" />
-        <StatCard label="Disponibles à la vente" value={formatNumber(stats.availableForSale)} accent="#ef4444" />
-        <StatCard label="Réservées" value={formatNumber(stats.reservedCount)} accent="#facc15" />
-        <StatCard label="Produits scellés" value={formatNumber(stats.sealedCount)} accent="#6b7280" />
-        <StatCard label="Valeur collection" value={formatCurrency(stats.collectionValue, currency)} accent="#3b82f6" />
-        <StatCard label="Valeur stock" value={formatCurrency(stats.stockValue, currency)} accent="#ef4444" />
-        <StatCard label="Total achats" value={formatCurrency(stats.totalPurchases, currency)} accent="#f97316" />
-        <StatCard label="Total ventes" value={formatCurrency(stats.totalSales, currency)} accent="#22c55e" />
-        <StatCard
-          label="Bénéfice / perte"
-          value={formatCurrency(stats.profit, currency)}
-          accent={stats.profit >= 0 ? "#22c55e" : "#ef4444"}
-        />
-      </div>
+      {/* Indicateurs — collection */}
+      <section className="space-y-3">
+        <SectionTitle>Ma collection</SectionTitle>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <StatCard
+            label="Exemplaires possédés"
+            value={formatNumber(stats.totalOwned)}
+            sub={`${formatNumber(stats.distinctCards)} cartes différentes`}
+            accent="#a855f7"
+            icon={<Layers className="h-4 w-4" />}
+          />
+          <StatCard
+            label="Valeur collection"
+            value={formatCurrency(stats.collectionValue, currency)}
+            accent="#3b82f6"
+            icon={<Gem className="h-4 w-4" />}
+          />
+          <StatCard
+            label="Produits scellés"
+            value={formatNumber(stats.sealedCount)}
+            accent="#6b7280"
+            icon={<Gift className="h-4 w-4" />}
+          />
+        </div>
+      </section>
+
+      {/* Indicateurs — stock à vendre */}
+      <section className="space-y-3">
+        <SectionTitle>Stock à vendre</SectionTitle>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <StatCard
+            label="Disponibles à la vente"
+            value={formatNumber(stats.availableForSale)}
+            accent="#ef4444"
+            icon={<PackageCheck className="h-4 w-4" />}
+          />
+          <StatCard
+            label="Réservées"
+            value={formatNumber(stats.reservedCount)}
+            accent="#facc15"
+            icon={<Pin className="h-4 w-4" />}
+          />
+          <StatCard
+            label="Valeur stock"
+            value={formatCurrency(stats.stockValue, currency)}
+            accent="#ef4444"
+            icon={<Tags className="h-4 w-4" />}
+          />
+        </div>
+      </section>
+
+      {/* Indicateurs — finances */}
+      <section className="space-y-3">
+        <SectionTitle>Finances</SectionTitle>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <StatCard
+            label="Total achats"
+            value={formatCurrency(stats.totalPurchases, currency)}
+            accent="#f97316"
+            icon={<ShoppingCart className="h-4 w-4" />}
+          />
+          <StatCard
+            label="Total ventes"
+            value={formatCurrency(stats.totalSales, currency)}
+            accent="#22c55e"
+            icon={<Wallet className="h-4 w-4" />}
+          />
+          <StatCard
+            label="Bénéfice / perte"
+            value={formatCurrency(stats.profit, currency)}
+            accent={stats.profit >= 0 ? "#22c55e" : "#ef4444"}
+            icon={<TrendingUp className="h-4 w-4" />}
+          />
+        </div>
+      </section>
 
       {/* Graphiques */}
       <div className="grid gap-4 lg:grid-cols-2">

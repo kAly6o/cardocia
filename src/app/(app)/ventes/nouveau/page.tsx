@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/get-user";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/StatCard";
 import { SaleForm, type StockOption } from "@/components/sales/SaleForm";
+import { ArrowLeft } from "lucide-react";
 
 export default async function NewSalePage() {
   const user = await requireUser();
@@ -46,7 +47,7 @@ export default async function NewSalePage() {
         description="Associez les articles vendus depuis votre stock pour calculer la rentabilité."
         actions={
           <Link href="/ventes" className="text-sm text-muted transition-colors hover:text-ink">
-            ← Retour aux ventes
+            <ArrowLeft className="mr-1 inline-block h-3.5 w-3.5 align-[-2px]" />Retour aux ventes
           </Link>
         }
       />
