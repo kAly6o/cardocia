@@ -96,7 +96,7 @@ export default async function StockCollectionPage({
                     {s.name}
                   </Link>
                   {s.abbreviation && (
-                    <span className="shrink-0 rounded border border-line px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
+                    <span className="shrink-0 rounded-md border border-brand-accent/30 bg-brand-accent/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-accent">
                       {s.abbreviation}
                     </span>
                   )}
