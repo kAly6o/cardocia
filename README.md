@@ -2,7 +2,7 @@
 
 Application web de gestion personnelle de collection Pokémon : catalogue, collection,
 stock à vendre, achats, ventes, import CSV, lots, boosters reconditionnés, produits
-scellés, fournisseurs, historique et statistiques.
+scellés, historique et statistiques.
 
 Interface **en français**, thème **sombre**, **responsive** (ordinateur, tablette,
 téléphone).

@@ -1,6 +1,6 @@
 # CARDOCIA
 # CAHIER DES CHARGES FONCTIONNEL ET TECHNIQUE
-**Version 1.0 — Création complète depuis zéro**
+**Version 1.1 — Périmètre ajusté (fournisseurs retirés)**
 
 ---
 
@@ -133,7 +133,6 @@ Chaque utilisateur doit posséder ses propres données :
 - Lots.
 - Boosters.
 - Produits scellés.
-- Fournisseurs.
 - Imports.
 - Historique.
 - Statistiques.
@@ -164,10 +163,9 @@ Créer une barre latérale avec les rubriques suivantes :
 8. Lots.
 9. Boosters reconditionnés.
 10. Produits scellés.
-11. Fournisseurs.
-12. Historique.
-13. Statistiques.
-14. Paramètres.
+11. Historique.
+12. Statistiques.
+13. Paramètres.
 
 La navigation doit être persistante sur ordinateur et adaptée aux petits écrans sur mobile.
 
@@ -839,20 +837,9 @@ Seules les cartes confirmées par l'utilisateur peuvent être ajoutées à la co
 
 # 15. FOURNISSEURS ET VENDEURS
 
-Créer une rubrique dédiée.
-
-Informations :
-
-- Nom.
-- Type.
-- Coordonnées.
-- Site internet.
-- Notes.
-- Historique des achats.
-
-Permettre d'ajouter, modifier, consulter et rechercher les fournisseurs.
-
-Un fournisseur peut être associé à plusieurs achats.
+> **Fonctionnalité retirée du périmètre** (révision 1.1) : le suivi des
+> fournisseurs en tant que tels n'est pas requis pour l'usage visé. Les achats
+> enregistrent déjà le vendeur (nom) directement.
 
 ---
 
@@ -953,7 +940,6 @@ Prévoir une recherche dans :
 - Ventes.
 - Lots.
 - Produits scellés.
-- Fournisseurs.
 
 ## 18.2 Filtres
 
@@ -1082,10 +1068,6 @@ Les entités suivantes constituent le périmètre fonctionnel minimal.
 - ProductOpening.
 - ProductOpeningLine.
 
-## Fournisseurs
-
-- Supplier.
-
 ## Importation
 
 - ImportBatch.
@@ -1208,11 +1190,10 @@ Les prix et calculs doivent être validés côté serveur.
 - Fabrication.
 - Traçabilité.
 
-## Phase 7 — Produits et fournisseurs
+## Phase 7 — Produits scellés
 
 - Produits scellés.
 - Ouvertures.
-- Fournisseurs.
 
 ## Phase 8 — Statistiques et finalisation
 
@@ -1270,7 +1251,6 @@ Livrables :
 - Lots.
 - Boosters reconditionnés.
 - Produits scellés.
-- Fournisseurs.
 - Historique.
 - Statistiques.
 - Documentation d'installation.
