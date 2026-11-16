@@ -115,7 +115,6 @@ export default async function AdminCataloguePage({
       <PageHeader
         title="Gestion du catalogue"
         description="Collections, extensions et cartes partagées par tous les utilisateurs."
-        actions={<CollectionFormModal />}
       />
 
       <div className="flex flex-wrap gap-2">
@@ -140,8 +139,7 @@ export default async function AdminCataloguePage({
           {collections.length === 0 ? (
             <EmptyState
               title="Aucune collection"
-              description="Ajoutez une collection de cartes."
-              action={<CollectionFormModal />}
+              description="Le catalogue se remplit via l'import TCGdex."
             />
           ) : (
             <Table headers={["Nom", "Slug", "Ordre", "Description", "Actions"]}>
@@ -205,12 +203,8 @@ export default async function AdminCataloguePage({
             <button type="submit" className="h-10 rounded-lg bg-brand px-4 text-sm font-medium text-white transition-colors hover:bg-brand-strong">Filtrer</button>
           </form>
 
-          <div className="flex justify-end">
-            <SetFormModal collections={collectionOptions} />
-          </div>
-
           {sets.length === 0 ? (
-            <EmptyState title="Aucune extension" description="Ajoutez une extension dans une collection." />
+            <EmptyState title="Aucune extension" description="Le catalogue se remplit via l'import TCGdex." />
           ) : (
             <Table headers={["Nom", "Collection", "Sortie", "Cartes", "Actions"]}>
               {sets.map((s) => (
