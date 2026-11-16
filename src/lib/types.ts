@@ -24,6 +24,7 @@ export interface CatalogSet {
   name: string;
   original_name: string | null;
   external_id: string | null;
+  abbreviation: string | null;
   symbol: string | null;
   logo: string | null;
   release_date: string | null;

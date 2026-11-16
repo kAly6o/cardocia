@@ -88,12 +88,19 @@ export default async function StockCollectionPage({
                 />
               </div>
               <div className="p-4 sm:p-5">
-                <Link
-                  href={`/stock/set/${s.id}`}
-                  className="block min-w-0 truncate font-semibold text-ink transition-colors hover:text-brand"
-                >
-                  {s.name}
-                </Link>
+                <div className="flex items-center gap-1.5">
+                  <Link
+                    href={`/stock/set/${s.id}`}
+                    className="min-w-0 truncate font-semibold text-ink transition-colors hover:text-brand"
+                  >
+                    {s.name}
+                  </Link>
+                  {s.abbreviation && (
+                    <span className="shrink-0 rounded border border-line px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
+                      {s.abbreviation}
+                    </span>
+                  )}
+                </div>
                 <p className="mt-2 text-xs text-muted">
                   {formatNumber(s.inStockDistinct)} carte{s.inStockDistinct > 1 ? "s" : ""} ·{" "}
                   {formatNumber(s.inStockQuantity)} exemplaire{s.inStockQuantity > 1 ? "s" : ""} en stock

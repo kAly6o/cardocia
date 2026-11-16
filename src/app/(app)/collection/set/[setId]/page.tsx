@@ -88,7 +88,7 @@ export default async function CollectionSetPage({
     <div className="space-y-6">
       <PageHeader
         title={set.name}
-        description={`${set.collection?.name ?? ""} · ${tracker.ownedDistinct}/${tracker.total} cartes · ${tracker.percent}%`}
+        description={`${set.collection?.name ?? ""}${set.abbreviation ? ` · ${set.abbreviation}` : ""} · ${tracker.ownedDistinct}/${tracker.total} cartes · ${tracker.percent}%`}
         actions={
           <Link
             href={`/collection/${set.collection_id}`}

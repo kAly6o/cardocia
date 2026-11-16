@@ -77,7 +77,7 @@ export default async function StockSetPage({
     <div className="space-y-6">
       <PageHeader
         title={set.name}
-        description={`${set.collection?.name ?? ""} · ${tracker.distinct}/${tracker.total} cartes en stock · ${formatNumber(totalQty)} exemplaires`}
+        description={`${set.collection?.name ?? ""}${set.abbreviation ? ` · ${set.abbreviation}` : ""} · ${tracker.distinct}/${tracker.total} cartes en stock · ${formatNumber(totalQty)} exemplaires`}
         actions={
           <Link
             href={`/stock/${set.collection_id}`}

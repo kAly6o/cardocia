@@ -86,12 +86,19 @@ export default async function CollectionSetsPage({
               </div>
               <div className="p-4 sm:p-5">
                 <div className="flex items-start justify-between gap-2">
-                  <Link
-                    href={`/collection/set/${s.id}`}
-                    className="min-w-0 truncate font-semibold text-ink transition-colors hover:text-brand"
-                  >
-                    {s.name}
-                  </Link>
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <Link
+                      href={`/collection/set/${s.id}`}
+                      className="truncate font-semibold text-ink transition-colors hover:text-brand"
+                    >
+                      {s.name}
+                    </Link>
+                    {s.abbreviation && (
+                      <span className="shrink-0 rounded border border-line px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
+                        {s.abbreviation}
+                      </span>
+                    )}
+                  </div>
                   <form action={toggleTrackSet}>
                     <input type="hidden" name="set_id" value={s.id} />
                     <button

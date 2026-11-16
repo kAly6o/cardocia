@@ -129,6 +129,7 @@ async function main() {
               collection_id: col.id,
               name: setDetail.name ?? set.name,
               external_id: set.id,
+              abbreviation: setDetail.abbreviation?.official ?? null,
               symbol: setDetail.symbol ?? null,
               logo: setDetail.logo ? `${setDetail.logo}.png` : null,
               release_date: setDetail.releaseDate ?? null,

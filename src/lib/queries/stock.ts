@@ -92,6 +92,7 @@ export async function getStockCollectionTracker(
 export interface StockSet {
   id: string;
   name: string;
+  abbreviation: string | null;
   logo: string | null;
   card_count: number | null;
   inStockDistinct: number;
@@ -107,7 +108,7 @@ export async function getStockSetTracker(
   const [setsRes, itemsRes] = await Promise.all([
     supabase
       .from("catalog_sets")
-      .select("id, name, logo, card_count")
+      .select("id, name, logo, card_count, abbreviation")
       .eq("collection_id", collectionId)
       .order("release_date", { ascending: true, nullsFirst: false })
       .order("name"),
@@ -120,6 +121,7 @@ export async function getStockSetTracker(
   const sets = (setsRes.data ?? []) as {
     id: string;
     name: string;
+    abbreviation: string | null;
     logo: string | null;
     card_count: number | null;
   }[];
@@ -145,6 +147,7 @@ export async function getStockSetTracker(
     return {
       id: s.id,
       name: s.name,
+      abbreviation: s.abbreviation,
       logo: s.logo,
       card_count: s.card_count,
       inStockDistinct: a?.distinct.size ?? 0,

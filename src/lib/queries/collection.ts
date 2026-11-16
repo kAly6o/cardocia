@@ -103,6 +103,7 @@ export async function getCollectionTracker(
 export interface TrackedSet {
   id: string;
   name: string;
+  abbreviation: string | null;
   logo: string | null;
   card_count: number | null;
   ownedDistinct: number;
@@ -120,7 +121,7 @@ export async function getSetTracker(
   const [setsRes, itemsRes, trackedRes] = await Promise.all([
     supabase
       .from("catalog_sets")
-      .select("id, name, logo, card_count")
+      .select("id, name, logo, card_count, abbreviation")
       .eq("collection_id", collectionId)
       .order("release_date", { ascending: true, nullsFirst: false })
       .order("name"),
@@ -134,6 +135,7 @@ export async function getSetTracker(
   const sets = (setsRes.data ?? []) as {
     id: string;
     name: string;
+    abbreviation: string | null;
     logo: string | null;
     card_count: number | null;
   }[];
@@ -163,6 +165,7 @@ export async function getSetTracker(
     return {
       id: s.id,
       name: s.name,
+      abbreviation: s.abbreviation,
       logo: s.logo,
       card_count: s.card_count,
       ownedDistinct: distinct,
