@@ -139,17 +139,6 @@ export interface StockMovement {
   card?: CatalogCard | null;
 }
 
-export interface Supplier {
-  id: string;
-  user_id: string;
-  name: string;
-  type: string | null;
-  contact: string | null;
-  website: string | null;
-  notes: string | null;
-  created_at: string;
-}
-
 export type PurchaseStatus = "En attente" | "Reçu" | "Annulé";
 
 export type ProductType =
@@ -169,7 +158,6 @@ export interface Purchase {
   id: string;
   user_id: string;
   purchase_date: string;
-  supplier_id: string | null;
   seller_name: string | null;
   reference: string | null;
   description: string | null;
@@ -183,7 +171,6 @@ export interface Purchase {
   source: string | null;
   created_at: string;
   updated_at: string;
-  supplier?: Supplier | null;
   lines?: PurchaseLine[];
 }
 
