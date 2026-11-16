@@ -7,6 +7,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Field, Input, Textarea, FormMessage, type ActionState } from "@/components/ui/Form";
 import { SubmitButton, Button } from "@/components/ui/Button";
 import { saveCollection } from "@/lib/actions/admin";
+import { logoUrl } from "@/lib/utils";
 
 export interface CollectionFormItem {
   id: string;
@@ -67,8 +68,26 @@ export function CollectionFormModal({
           <Field label="Description">
             <Textarea name="description" rows={2} defaultValue={item?.description ?? ""} />
           </Field>
+          {editing && item?.logo && (
+            <div className="flex items-center gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={logoUrl(item.logo) ?? undefined}
+                alt="Logo actuel"
+                className="h-12 rounded-md border border-line bg-logo-bg object-contain p-1"
+              />
+              <span className="text-xs text-muted">Logo actuel</span>
+            </div>
+          )}
           <Field label="Logo (URL)">
             <Input name="logo" defaultValue={item?.logo ?? ""} placeholder="https://…" />
+          </Field>
+          <Field label="Ou importer une image" hint="PNG, JPG ou WebP — prioritaire sur l'URL si fournie.">
+            <Input
+              type="file"
+              name="logo_file"
+              accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+            />
           </Field>
           <FormMessage state={state} />
           <div className="flex justify-end gap-2">

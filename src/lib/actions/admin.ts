@@ -18,6 +18,25 @@ function strOrNull(value: FormDataEntryValue | null): string | null {
   return s === "" ? null : s;
 }
 
+const CATALOG_LOGOS_BUCKET = "catalog-logos";
+
+/** Upload une image de logo dans le bucket public et renvoie son URL, ou null. */
+async function uploadCatalogImage(
+  supabase: ReturnType<typeof createAdminClient>,
+  file: File,
+  folder: "collections" | "sets",
+): Promise<string | null> {
+  if (!file || file.size === 0) return null;
+  const ext = (file.name.split(".").pop() ?? "png").toLowerCase();
+  const safeExt = /^(png|jpe?g|webp|gif|svg)$/.test(ext) ? ext : "png";
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${safeExt}`;
+  const { error } = await supabase.storage
+    .from(CATALOG_LOGOS_BUCKET)
+    .upload(path, file, { contentType: file.type || undefined, upsert: false });
+  if (error) return null;
+  return supabase.storage.from(CATALOG_LOGOS_BUCKET).getPublicUrl(path).data.publicUrl;
+}
+
 // ---------------------------------------------------------------------------
 // Catalogue — collections
 // ---------------------------------------------------------------------------
@@ -33,11 +52,18 @@ export async function saveCollection(
   if (!name) return { error: "Le nom de la collection est requis." };
   if (!slug) return { error: "L'identifiant (slug) est requis." };
 
+  let logo = strOrNull(formData.get("logo"));
+  const logoFile = formData.get("logo_file") as File | null;
+  if (logoFile && logoFile.size > 0) {
+    const uploaded = await uploadCatalogImage(supabase, logoFile, "collections");
+    if (uploaded) logo = uploaded;
+  }
+
   const payload = {
     name,
     slug,
     description: strOrNull(formData.get("description")),
-    logo: strOrNull(formData.get("logo")),
+    logo,
     sort_order: toInt(formData.get("sort_order")) ?? 0,
   };
 
@@ -78,13 +104,20 @@ export async function saveSet(
   if (!name) return { error: "Le nom de l'extension est requis." };
   if (!collectionId) return { error: "La collection est requise." };
 
+  let logo = strOrNull(formData.get("logo"));
+  const logoFile = formData.get("logo_file") as File | null;
+  if (logoFile && logoFile.size > 0) {
+    const uploaded = await uploadCatalogImage(supabase, logoFile, "sets");
+    if (uploaded) logo = uploaded;
+  }
+
   const payload = {
     collection_id: collectionId,
     name,
     original_name: strOrNull(formData.get("original_name")),
     external_id: strOrNull(formData.get("external_id")),
     symbol: strOrNull(formData.get("symbol")),
-    logo: strOrNull(formData.get("logo")),
+    logo,
     release_date: strOrNull(formData.get("release_date")),
     card_count: toInt(formData.get("card_count")),
   };

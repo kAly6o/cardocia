@@ -25,12 +25,17 @@ interface CollectionRow {
   name: string;
   slug: string;
   description: string | null;
+  logo: string | null;
   sort_order: number;
 }
 interface SetRow {
   id: string;
   collection_id: string;
   name: string;
+  original_name: string | null;
+  external_id: string | null;
+  symbol: string | null;
+  logo: string | null;
   release_date: string | null;
   card_count: number | null;
   collection: { name: string } | null;
@@ -61,7 +66,7 @@ export default async function AdminCataloguePage({
 
   const { data: collectionsData } = await supabase
     .from("catalog_collections")
-    .select("id, name, slug, description, sort_order")
+    .select("id, name, slug, description, logo, sort_order")
     .order("sort_order")
     .order("name");
   const collections = (collectionsData ?? []) as CollectionRow[];
@@ -71,7 +76,7 @@ export default async function AdminCataloguePage({
     let req = supabase
       .from("catalog_sets")
       .select(
-        "id, collection_id, name, release_date, card_count, collection:catalog_collections(name)",
+        "id, collection_id, name, original_name, external_id, symbol, logo, release_date, card_count, collection:catalog_collections(name)",
       )
       .order("release_date", { ascending: true, nullsFirst: false })
       .order("name");
@@ -153,7 +158,7 @@ export default async function AdminCataloguePage({
                           name: c.name,
                           slug: c.slug,
                           description: c.description,
-                          logo: null,
+                          logo: c.logo,
                           sort_order: c.sort_order,
                         }}
                         trigger={<IconButton title="Modifier"><Pencil className="h-4 w-4" /></IconButton>}
@@ -207,10 +212,10 @@ export default async function AdminCataloguePage({
                           id: s.id,
                           collection_id: s.collection_id,
                           name: s.name,
-                          original_name: null,
-                          external_id: null,
-                          symbol: null,
-                          logo: null,
+                          original_name: s.original_name,
+                          external_id: s.external_id,
+                          symbol: s.symbol,
+                          logo: s.logo,
                           release_date: s.release_date,
                           card_count: s.card_count,
                         }}

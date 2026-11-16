@@ -37,7 +37,10 @@ export function formatNumber(value: number | null | undefined): string {
 /** URL d'un logo TCGdex : l'API renvoie un chemin sans extension («.../logo»). */
 export function logoUrl(logo: string | null | undefined): string | null {
   if (!logo) return null;
-  return logo.endsWith(".png") ? logo : `${logo}.png`;
+  // URL d'image complète (png/jpg/webp/gif/svg…) → on la laisse telle quelle.
+  if (/\.(png|jpe?g|webp|gif|svg)$/i.test(logo)) return logo;
+  // Sinon (chemin TCGdex « …/logo ») → on complète avec l'extension.
+  return `${logo}.png`;
 }
 
 export function formatDate(
