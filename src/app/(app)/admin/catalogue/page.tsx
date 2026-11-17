@@ -58,18 +58,20 @@ interface CardRow {
 export default async function AdminCataloguePage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string; collection?: string; q?: string; set?: string }>;
+  searchParams: Promise<{ tab?: string; collection?: string; q?: string; set?: string; issue?: string }>;
 }) {
   const sp = await searchParams;
   const tab: Tab =
     sp.tab === "sets" || sp.tab === "cards" ? sp.tab : "collections";
   const supabase = createAdminClient();
 
-  const { data: collectionsData } = await supabase
+  let colReq = supabase
     .from("catalog_collections")
     .select("id, name, slug, description, logo, sort_order")
     .order("sort_order")
     .order("name");
+  if (sp.issue === "col-no-logo") colReq = colReq.is("logo", null);
+  const { data: collectionsData } = await colReq;
   const collections = (collectionsData ?? []) as CollectionRow[];
 
   let sets: SetRow[] = [];
@@ -82,6 +84,8 @@ export default async function AdminCataloguePage({
       .order("release_date", { ascending: true, nullsFirst: false })
       .order("name");
     if (sp.collection) req = req.eq("collection_id", sp.collection);
+    if (sp.issue === "no-abbr") req = req.is("abbreviation", null);
+    else if (sp.issue === "no-logo") req = req.is("logo", null);
     const { data } = await req.limit(500);
     sets = (data ?? []) as unknown as SetRow[];
   }
@@ -97,6 +101,9 @@ export default async function AdminCataloguePage({
       .limit(200);
     if (sp.set) req = req.eq("set_id", sp.set);
     if (sp.q) req = req.ilike("name", `%${sp.q}%`);
+    if (sp.issue === "no-image") req = req.is("image", null);
+    else if (sp.issue === "no-number") req = req.eq("number", "");
+    else if (sp.issue === "no-rarity") req = req.is("rarity", null);
     const { data } = await req;
     cards = (data ?? []) as unknown as CardRow[];
   }

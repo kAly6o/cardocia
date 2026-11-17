@@ -11,6 +11,7 @@ import {
   Settings,
   ScanLine,
   ShieldCheck,
+  Activity,
   BookOpen,
   Users,
   Download,
@@ -123,6 +124,11 @@ export const ADMIN_NAV_ITEMS: NavItem[] = [
     href: "/admin/catalogue",
     label: "Catalogue",
     icon: <BookOpen className="h-5 w-5" />,
+  },
+  {
+    href: "/admin/sante",
+    label: "Santé",
+    icon: <Activity className="h-5 w-5" />,
   },
   {
     href: "/admin/utilisateurs",
