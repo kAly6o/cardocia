@@ -13,6 +13,7 @@ export interface SetFormItem {
   id: string;
   collection_id: string;
   name: string;
+  abbreviation: string | null;
   original_name: string | null;
   external_id: string | null;
   symbol: string | null;
@@ -84,6 +85,9 @@ export function SetFormModal({
               <Input name="original_name" defaultValue={item?.original_name ?? ""} />
             </Field>
           </div>
+          <Field label="Abréviation (code officiel)" hint="Ex. SSP, PAR — affichée à côté du nom.">
+            <Input name="abbreviation" defaultValue={item?.abbreviation ?? ""} />
+          </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Symbole">
               <Input name="symbol" defaultValue={item?.symbol ?? ""} />

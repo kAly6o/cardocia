@@ -33,6 +33,7 @@ interface SetRow {
   id: string;
   collection_id: string;
   name: string;
+  abbreviation: string | null;
   original_name: string | null;
   external_id: string | null;
   symbol: string | null;
@@ -79,7 +80,7 @@ export default async function AdminCataloguePage({
     let req = supabase
       .from("catalog_sets")
       .select(
-        "id, collection_id, name, original_name, external_id, symbol, logo, release_date, card_count, collection:catalog_collections(name)",
+        "id, collection_id, name, abbreviation, original_name, external_id, symbol, logo, release_date, card_count, collection:catalog_collections(name)",
       )
       .order("release_date", { ascending: true, nullsFirst: false })
       .order("name");
@@ -240,6 +241,7 @@ export default async function AdminCataloguePage({
                           id: s.id,
                           collection_id: s.collection_id,
                           name: s.name,
+                          abbreviation: s.abbreviation,
                           original_name: s.original_name,
                           external_id: s.external_id,
                           symbol: s.symbol,

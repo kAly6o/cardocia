@@ -2,6 +2,9 @@
 
 import { createAdminClient } from "../supabase/admin";
 import { toNumber } from "../utils";
+import type { SetFormItem } from "@/components/admin/SetFormModal";
+import type { CollectionFormItem } from "@/components/admin/CollectionFormModal";
+import type { CardFormItem } from "@/components/admin/CardFormModal";
 
 export interface GlobalStats {
   users: number;
@@ -126,11 +129,11 @@ function addTop(
 // Santé du catalogue — diagnostic d'intégrité
 // ---------------------------------------------------------------------------
 
-export interface CatalogHealthItem {
-  id: string;
-  name: string;
-  detail: string | null;
-}
+export type CatalogHealthItem =
+  | { kind: "set"; id: string; name: string; detail: string | null; edit: SetFormItem }
+  | { kind: "collection"; id: string; name: string; detail: string | null; edit: CollectionFormItem }
+  | { kind: "card"; id: string; name: string; detail: string | null; edit: CardFormItem }
+  | { kind: "none"; id: string; name: string; detail: string | null; edit: null };
 
 export type CatalogHealthSeverity = "error" | "warning" | "info";
 
@@ -152,19 +155,45 @@ export interface CatalogHealth {
   errors: number;
   warnings: number;
   checks: CatalogHealthCheck[];
+  collectionOptions: { id: string; name: string }[];
+  setOptions: { id: string; label: string }[];
 }
 
 interface HealthSetRow {
   id: string;
+  collection_id: string;
   name: string;
+  abbreviation: string | null;
+  original_name: string | null;
+  external_id: string | null;
+  symbol: string | null;
+  logo: string | null;
+  release_date: string | null;
   card_count: number | null;
   collection: { name: string } | null;
 }
 
 interface HealthCardRow {
   id: string;
+  set_id: string;
   name: string;
+  number: string;
+  external_id: string | null;
+  image: string | null;
+  rarity: string | null;
+  pokemon_type: string | null;
+  illustrator: string | null;
+  description: string | null;
   set: { name: string } | null;
+}
+
+interface HealthCollectionRow {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  logo: string | null;
+  sort_order: number;
 }
 
 const catPath = (params: string) => `/admin/catalogue?${params}`;
@@ -207,13 +236,23 @@ export async function getCatalogHealth(): Promise<CatalogHealth> {
   const noNumberCount = supabase.from("catalog_cards").select("id", { count: "exact", head: true }).eq("number", "");
   const noRarityCount = supabase.from("catalog_cards").select("id", { count: "exact", head: true }).is("rarity", null);
 
-  const noAbbrSample = supabase.from("catalog_sets").select("id,name,collection:catalog_collections(name)").is("abbreviation", null).order("name").limit(10);
-  const noLogoSample = supabase.from("catalog_sets").select("id,name,collection:catalog_collections(name)").is("logo", null).order("name").limit(10);
-  const colNoLogoSample = supabase.from("catalog_collections").select("id,name").is("logo", null).order("name").limit(10);
-  const noImageSample = supabase.from("catalog_cards").select("id,name,set:catalog_sets(name)").is("image", null).order("name").limit(10);
-  const noNumberSample = supabase.from("catalog_cards").select("id,name,set:catalog_sets(name)").eq("number", "").order("name").limit(10);
-  const noRaritySample = supabase.from("catalog_cards").select("id,name,set:catalog_sets(name)").is("rarity", null).order("name").limit(10);
+  const SET_SAMPLE =
+    "id, collection_id, name, abbreviation, original_name, external_id, symbol, logo, release_date, card_count, collection:catalog_collections(name)";
+  const CARD_SAMPLE =
+    "id, set_id, name, number, external_id, image, rarity, pokemon_type, illustrator, description, set:catalog_sets(name)";
+
+  const noAbbrSample = supabase.from("catalog_sets").select(SET_SAMPLE).is("abbreviation", null).order("name").limit(10);
+  const noLogoSample = supabase.from("catalog_sets").select(SET_SAMPLE).is("logo", null).order("name").limit(10);
+  const colNoLogoSample = supabase.from("catalog_collections").select("id, name, slug, description, logo, sort_order").is("logo", null).order("name").limit(10);
+  const noImageSample = supabase.from("catalog_cards").select(CARD_SAMPLE).is("image", null).order("name").limit(10);
+  const noNumberSample = supabase.from("catalog_cards").select(CARD_SAMPLE).eq("number", "").order("name").limit(10);
+  const noRaritySample = supabase.from("catalog_cards").select(CARD_SAMPLE).is("rarity", null).order("name").limit(10);
   const allSets = supabase.from("catalog_sets").select("id,name,card_count,collection:catalog_collections(name)").order("name");
+  const collectionOptions = supabase.from("catalog_collections").select("id,name").order("name");
+  const setOptions = supabase
+    .from("catalog_sets")
+    .select("id,name,collection:catalog_collections(name)")
+    .order("name");
 
   const [
     setsTotalRes,
@@ -231,6 +270,8 @@ export async function getCatalogHealth(): Promise<CatalogHealth> {
     noImageSampleRes,
     noNumberSampleRes,
     noRaritySampleRes,
+    collectionOptionsRes,
+    setOptionsRes,
     allSetsRes,
   ] = await Promise.all([
     totalSets,
@@ -248,6 +289,8 @@ export async function getCatalogHealth(): Promise<CatalogHealth> {
     noImageSample,
     noNumberSample,
     noRaritySample,
+    collectionOptions,
+    setOptions,
     allSets,
   ]);
 
@@ -259,21 +302,73 @@ export async function getCatalogHealth(): Promise<CatalogHealth> {
     countBySet.set(id, (countBySet.get(id) ?? 0) + 1);
   }
 
-  const sets = (allSetsRes.data ?? []) as unknown as HealthSetRow[];
+  const sets = (allSetsRes.data ?? []) as unknown as Array<{
+    id: string;
+    name: string;
+    card_count: number | null;
+    collection: { name: string } | null;
+  }>;
   const emptySets = sets.filter((s) => !withCards.has(s.id));
   const mismatchSets = sets
     .filter((s) => s.card_count != null && (countBySet.get(s.id) ?? 0) !== s.card_count)
     .map((s) => ({ ...s, imported: countBySet.get(s.id) ?? 0 }));
 
-  const setItem = (r: HealthSetRow): CatalogHealthItem => ({
+  const toSetItem = (r: HealthSetRow): CatalogHealthItem => ({
+    kind: "set",
     id: r.id,
     name: r.name,
     detail: r.collection?.name ?? null,
+    edit: {
+      id: r.id,
+      collection_id: r.collection_id,
+      name: r.name,
+      abbreviation: r.abbreviation,
+      original_name: r.original_name,
+      external_id: r.external_id,
+      symbol: r.symbol,
+      logo: r.logo,
+      release_date: r.release_date,
+      card_count: r.card_count,
+    },
   });
-  const cardItem = (r: HealthCardRow): CatalogHealthItem => ({
+  const toCollectionItem = (r: HealthCollectionRow): CatalogHealthItem => ({
+    kind: "collection",
+    id: r.id,
+    name: r.name,
+    detail: null,
+    edit: {
+      id: r.id,
+      name: r.name,
+      slug: r.slug,
+      description: r.description,
+      logo: r.logo,
+      sort_order: r.sort_order,
+    },
+  });
+  const toCardItem = (r: HealthCardRow): CatalogHealthItem => ({
+    kind: "card",
     id: r.id,
     name: r.name,
     detail: r.set?.name ?? null,
+    edit: {
+      id: r.id,
+      set_id: r.set_id,
+      name: r.name,
+      number: r.number,
+      external_id: r.external_id,
+      image: r.image,
+      rarity: r.rarity,
+      pokemon_type: r.pokemon_type,
+      illustrator: r.illustrator,
+      description: r.description,
+    },
+  });
+  const toNoneItem = (r: { id: string; name: string; detail: string | null }): CatalogHealthItem => ({
+    kind: "none",
+    id: r.id,
+    name: r.name,
+    detail: r.detail,
+    edit: null,
   });
 const checks: CatalogHealthCheck[] = [
     {
@@ -282,7 +377,9 @@ const checks: CatalogHealthCheck[] = [
       description: "Extensions présentes au catalogue mais sans aucune carte importée.",
       severity: "error",
       count: emptySets.length,
-      items: emptySets.slice(0, 10).map(setItem),
+      items: emptySets
+        .slice(0, 10)
+        .map((s) => toNoneItem({ id: s.id, name: s.name, detail: s.collection?.name ?? null })),
       href: catPath("tab=sets"),
     },
     {
@@ -291,7 +388,7 @@ const checks: CatalogHealthCheck[] = [
       description: "Le code officiel (SSP, PAR…) manque et n'est pas affiché.",
       severity: "warning",
       count: noAbbrCountRes.count ?? 0,
-      items: ((noAbbrSampleRes.data ?? []) as unknown as HealthSetRow[]).map(setItem),
+      items: ((noAbbrSampleRes.data ?? []) as unknown as HealthSetRow[]).map(toSetItem),
       href: catPath("tab=sets&issue=no-abbr"),
     },
     {
@@ -300,7 +397,7 @@ const checks: CatalogHealthCheck[] = [
       description: "Aucun logo renseigné (affichage générique).",
       severity: "info",
       count: noLogoCountRes.count ?? 0,
-      items: ((noLogoSampleRes.data ?? []) as unknown as HealthSetRow[]).map(setItem),
+      items: ((noLogoSampleRes.data ?? []) as unknown as HealthSetRow[]).map(toSetItem),
       href: catPath("tab=sets&issue=no-logo"),
     },
     {
@@ -309,9 +406,9 @@ const checks: CatalogHealthCheck[] = [
       description: "Aucun logo renseigné pour la collection.",
       severity: "info",
       count: colNoLogoCountRes.count ?? 0,
-      items: (
-        (colNoLogoSampleRes.data ?? []) as unknown as Array<{ id: string; name: string }>
-      ).map((r) => ({ id: r.id, name: r.name, detail: null })),
+      items: ((colNoLogoSampleRes.data ?? []) as unknown as HealthCollectionRow[]).map(
+        toCollectionItem,
+      ),
       href: catPath("tab=collections&issue=col-no-logo"),
     },
     {
@@ -320,11 +417,13 @@ const checks: CatalogHealthCheck[] = [
       description: "Le nombre de cartes importées diffère du total officiel TCGdex (import peut être incomplet).",
       severity: "info",
       count: mismatchSets.length,
-      items: mismatchSets.slice(0, 10).map((s) => ({
-        id: s.id,
-        name: s.name,
-        detail: `${s.card_count} officiel · ${s.imported} importé`,
-      })),
+      items: mismatchSets.slice(0, 10).map((s) =>
+        toNoneItem({
+          id: s.id,
+          name: s.name,
+          detail: `${s.card_count} officiel · ${s.imported} importé`,
+        }),
+      ),
       href: catPath("tab=sets"),
     },
     {
@@ -333,7 +432,7 @@ const checks: CatalogHealthCheck[] = [
       description: "Aucune image renseignée pour la carte.",
       severity: "warning",
       count: noImageCountRes.count ?? 0,
-      items: ((noImageSampleRes.data ?? []) as unknown as HealthCardRow[]).map(cardItem),
+      items: ((noImageSampleRes.data ?? []) as unknown as HealthCardRow[]).map(toCardItem),
       href: catPath("tab=cards&issue=no-image"),
     },
     {
@@ -342,7 +441,7 @@ const checks: CatalogHealthCheck[] = [
       description: "Le numéro de collection est vide.",
       severity: "error",
       count: noNumberCountRes.count ?? 0,
-      items: ((noNumberSampleRes.data ?? []) as unknown as HealthCardRow[]).map(cardItem),
+      items: ((noNumberSampleRes.data ?? []) as unknown as HealthCardRow[]).map(toCardItem),
       href: catPath("tab=cards&issue=no-number"),
     },
     {
@@ -351,7 +450,7 @@ const checks: CatalogHealthCheck[] = [
       description: "Aucune rareté renseignée.",
       severity: "info",
       count: noRarityCountRes.count ?? 0,
-      items: ((noRaritySampleRes.data ?? []) as unknown as HealthCardRow[]).map(cardItem),
+      items: ((noRaritySampleRes.data ?? []) as unknown as HealthCardRow[]).map(toCardItem),
       href: catPath("tab=cards&issue=no-rarity"),
     },
   ];
@@ -368,5 +467,19 @@ const checks: CatalogHealthCheck[] = [
     errors,
     warnings,
     checks,
+    collectionOptions: (collectionOptionsRes.data ?? []) as unknown as {
+      id: string;
+      name: string;
+    }[],
+    setOptions: (
+      (setOptionsRes.data ?? []) as unknown as Array<{
+        id: string;
+        name: string;
+        collection: { name: string } | null;
+      }>
+    ).map((s) => ({
+      id: s.id,
+      label: s.collection ? `${s.name} — ${s.collection.name}` : s.name,
+    })),
   };
 }

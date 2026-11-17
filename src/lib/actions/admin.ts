@@ -79,6 +79,7 @@ export async function saveCollection(
   }
 
   await revalidatePath("/admin/catalogue");
+  await revalidatePath("/admin/sante");
   return { success: id ? "Collection modifiée." : "Collection ajoutée." };
 }
 
@@ -114,6 +115,7 @@ export async function saveSet(
   const payload = {
     collection_id: collectionId,
     name,
+    abbreviation: strOrNull(formData.get("abbreviation")),
     original_name: strOrNull(formData.get("original_name")),
     external_id: strOrNull(formData.get("external_id")),
     symbol: strOrNull(formData.get("symbol")),
@@ -129,6 +131,7 @@ export async function saveSet(
   if (error) return { error: "Impossible d'enregistrer l'extension." };
 
   await revalidatePath("/admin/catalogue");
+  await revalidatePath("/admin/sante");
   return { success: id ? "Extension modifiée." : "Extension ajoutée." };
 }
 
@@ -175,6 +178,7 @@ export async function saveCard(
   if (error) return { error: "Impossible d'enregistrer la carte." };
 
   await revalidatePath("/admin/catalogue");
+  await revalidatePath("/admin/sante");
   return { success: id ? "Carte modifiée." : "Carte ajoutée." };
 }
 
